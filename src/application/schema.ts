@@ -24,6 +24,14 @@ function createResolvers(client: RpcClient): Resolvers {
       queries: (client) => client,
       mutations: (client) => client,
       cache: (client) => rpcClient.request("getCache", client.id),
+      memoryInternals: async (client) => {
+        const memoryInternals = await rpcClient.request(
+          "getMemoryInternals",
+          client.id
+        );
+
+        return memoryInternals ?? null;
+      },
     },
     ClientQueries: {
       total: (client) => client.queryCount,
