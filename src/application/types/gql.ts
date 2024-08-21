@@ -263,6 +263,7 @@ export type MemoryInternalsQuery = {
     id: string;
     memoryInternals: {
       __typename: "MemoryInternals";
+      raw: JSON | null;
       caches: {
         __typename: "MemoryInternalsCaches";
         print: {

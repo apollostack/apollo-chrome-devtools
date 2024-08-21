@@ -1,6 +1,8 @@
 import type { TypedDocumentNode } from "@apollo/client";
 import { gql, NetworkStatus, useQuery } from "@apollo/client";
 import IconOutlink from "@apollo/icons/default/IconOutlink.svg";
+import IconOperations from "@apollo/icons/default/IconOperations.svg";
+import IconObserve from "@apollo/icons/default/IconObserve.svg";
 
 import { FullWidthLayout } from "./Layouts/FullWidthLayout";
 import { PageSpinner } from "./PageSpinner";
@@ -12,6 +14,11 @@ import type {
 import { Select } from "./Select";
 import type { ReactElement, ReactNode } from "react";
 import { useState } from "react";
+import { ButtonGroup } from "./ButtonGroup";
+import { Button } from "./Button";
+import { Tooltip } from "./Tooltip";
+import { JSONTreeViewer } from "./JSONTreeViewer";
+import { client } from "..";
 
 interface MemoryInternalsProps {
   clientId: string | undefined;
@@ -25,6 +32,7 @@ const MEMORY_INTERNALS_QUERY: TypedDocumentNode<
     client(id: $clientId) {
       id
       memoryInternals {
+        raw
         caches {
           print {
             ...CacheSizeFields
@@ -118,6 +126,7 @@ type InternalCache =
 
 export function MemoryInternals({ clientId }: MemoryInternalsProps) {
   const [selectedCache, setSelectedCache] = useState<InternalCache>("print");
+  const [selectedView, setSelectedView] = useState<"raw" | "chart">("chart");
   const { data, networkStatus, error } = useQuery(MEMORY_INTERNALS_QUERY, {
     variables: { clientId: clientId as string },
     skip: !clientId,
@@ -171,17 +180,43 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
 
   return (
     <Layout>
-      <div className="flex flex-col gap-4 items-start">
-        <Select
-          defaultValue="print"
-          value={selectedCache}
-          onValueChange={(value) => setSelectedCache(value as InternalCache)}
-        >
-          {Object.keys(cacheComponents).map((key) => (
-            <SelectOption label={key} key={key} />
-          ))}
-        </Select>
-        {cacheComponents[selectedCache]}
+      <ButtonGroup>
+        <Tooltip content="View historical">
+          <Button
+            icon={<IconObserve className="size-4" />}
+            size="md"
+            variant={selectedView === "chart" ? "primary" : "secondary"}
+            onClick={() => setSelectedView("chart")}
+          />
+        </Tooltip>
+        <Tooltip content="View raw">
+          <Button
+            icon={<IconOperations className="size-4" />}
+            size="md"
+            variant={selectedView === "raw" ? "primary" : "secondary"}
+            onClick={() => setSelectedView("raw")}
+          />
+        </Tooltip>
+      </ButtonGroup>
+      <div className="flex-1 overflow-auto">
+        {selectedView === "chart" ? (
+          <div className="flex flex-col gap-4">
+            <Select
+              defaultValue="print"
+              value={selectedCache}
+              onValueChange={(value) =>
+                setSelectedCache(value as InternalCache)
+              }
+            >
+              {Object.keys(cacheComponents).map((key) => (
+                <SelectOption label={key} key={key} />
+              ))}
+            </Select>
+            {cacheComponents[selectedCache]}
+          </div>
+        ) : selectedView === "raw" ? (
+          <JSONTreeViewer data={memoryInternals.raw} />
+        ) : null}
       </div>
     </Layout>
   );
@@ -198,7 +233,7 @@ function SelectOption({ label }: { label: string }) {
 function Layout({ children }: { children: ReactNode }) {
   return (
     <FullWidthLayout className="p-4 gap-4">
-      <header>
+      <header className="flex flex-col gap-2">
         <h1 className="font-medium text-2xl text-heading dark:text-heading-dark">
           Memory
         </h1>
@@ -217,9 +252,7 @@ function Layout({ children }: { children: ReactNode }) {
           .
         </p>
       </header>
-      <FullWidthLayout.Main className="overflow-auto">
-        {children}
-      </FullWidthLayout.Main>
+      <FullWidthLayout.Main className="gap-4">{children}</FullWidthLayout.Main>
     </FullWidthLayout>
   );
 }
