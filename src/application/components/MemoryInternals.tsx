@@ -139,9 +139,9 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
 
   if (networkStatus === NetworkStatus.loading) {
     return (
-      <Layout>
+      <EmptyLayout>
         <PageSpinner />
-      </Layout>
+      </EmptyLayout>
     );
   }
 
@@ -151,13 +151,13 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
   // TODO: Show a message for clients older < 3.9
   if (!caches) {
     return (
-      <Layout>
+      <EmptyLayout>
         <p className="text-secondary dark:text-secondary-dark">
           Could not get memory internals for the client. This may be a result of
           running your application in production mode as access to memory
           internals is disabled in production builds.
         </p>
-      </Layout>
+      </EmptyLayout>
     );
   }
 
@@ -179,28 +179,50 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
   };
 
   return (
-    <Layout>
-      <ButtonGroup>
-        <Tooltip content="View historical">
-          <Button
-            icon={<IconObserve className="size-4" />}
-            size="md"
-            variant={selectedView === "chart" ? "primary" : "secondary"}
-            onClick={() => setSelectedView("chart")}
-          />
-        </Tooltip>
-        <Tooltip content="View raw">
-          <Button
-            icon={<IconOperations className="size-4" />}
-            size="md"
-            variant={selectedView === "raw" ? "primary" : "secondary"}
-            onClick={() => setSelectedView("raw")}
-          />
-        </Tooltip>
-      </ButtonGroup>
-      <div className="flex-1 overflow-auto">
+    <FullWidthLayout className="p-4 gap-4">
+      <div className="flex gap-2 justify-between">
+        <header className="flex flex-col gap-2">
+          <h1 className="font-medium text-2xl text-heading dark:text-heading-dark">
+            Memory
+          </h1>
+          <p className="text-secondary dark:text-secondary-dark">
+            Learn how Apollo Client manages memory and how to set custom cache
+            size limits in the{" "}
+            <a
+              href="https://www.apollographql.com/docs/react/caching/memory-management/"
+              className="font-medium underline inline-flex items-center gap-2"
+              target="_blank"
+              rel="noopener noreferer noreferrer"
+            >
+              docs
+              <IconOutlink className="size-4" />
+            </a>
+            .
+          </p>
+        </header>
+
+        <ButtonGroup>
+          <Tooltip content="View historical">
+            <Button
+              icon={<IconObserve className="size-4" />}
+              size="md"
+              variant={selectedView === "chart" ? "primary" : "secondary"}
+              onClick={() => setSelectedView("chart")}
+            />
+          </Tooltip>
+          <Tooltip content="View raw">
+            <Button
+              icon={<IconOperations className="size-4" />}
+              size="md"
+              variant={selectedView === "raw" ? "primary" : "secondary"}
+              onClick={() => setSelectedView("raw")}
+            />
+          </Tooltip>
+        </ButtonGroup>
+      </div>
+      <FullWidthLayout.Main className="flex flex-col gap-4 overflow-auto items-start">
         {selectedView === "chart" ? (
-          <div className="flex flex-col gap-4">
+          <>
             <Select
               defaultValue="print"
               value={selectedCache}
@@ -213,12 +235,12 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
               ))}
             </Select>
             {cacheComponents[selectedCache]}
-          </div>
+          </>
         ) : selectedView === "raw" ? (
           <JSONTreeViewer data={memoryInternals.raw} />
         ) : null}
-      </div>
-    </Layout>
+      </FullWidthLayout.Main>
+    </FullWidthLayout>
   );
 }
 
@@ -230,7 +252,7 @@ function SelectOption({ label }: { label: string }) {
   );
 }
 
-function Layout({ children }: { children: ReactNode }) {
+function EmptyLayout({ children }: { children: ReactNode }) {
   return (
     <FullWidthLayout className="p-4 gap-4">
       <header className="flex flex-col gap-2">
