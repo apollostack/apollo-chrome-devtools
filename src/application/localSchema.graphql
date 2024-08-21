@@ -68,6 +68,11 @@ union LinkCacheSize =
   | RemoveTypenameFromVariablesLinkCacheSizes
 
 type MemoryInternals {
+  raw: JSON
+  caches: MemoryInternalsCaches!
+}
+
+type MemoryInternalsCaches {
   print: CacheSize
   parser: CacheSize
   canonicalStringify: CacheSize

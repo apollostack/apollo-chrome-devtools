@@ -42,64 +42,67 @@ function createResolvers(client: RpcClient): Resolvers {
         const limits = memoryInternals.limits;
 
         return {
-          print: getCacheSize(sizes.print, limits.print),
-          parser: getCacheSize(sizes.parser, limits.parser),
-          canonicalStringify: getCacheSize(
-            sizes.canonicalStringify,
-            limits.canonicalStringify
-          ),
-          links: sizes.links
-            .map((linkCache) => getLinkCacheSize(linkCache, limits))
-            .filter(Boolean),
-          queryManager: {
-            getDocumentInfo: getCacheSize(
-              sizes.queryManager.getDocumentInfo,
-              limits["queryManager.getDocumentInfo"]
+          raw: memoryInternals,
+          caches: {
+            print: getCacheSize(sizes.print, limits.print),
+            parser: getCacheSize(sizes.parser, limits.parser),
+            canonicalStringify: getCacheSize(
+              sizes.canonicalStringify,
+              limits.canonicalStringify
             ),
-            documentTransforms: getDocumentTransformCacheSizes(
-              sizes.queryManager.documentTransforms,
-              limits
-            ),
-          },
-          fragmentRegistry: {
-            lookup: getCacheSize(
-              sizes.fragmentRegistry?.lookup,
-              limits["fragmentRegistry.lookup"]
-            ),
-            findFragmentSpreads: getCacheSize(
-              sizes.fragmentRegistry?.findFragmentSpreads,
-              limits["fragmentRegistry.findFragmentSpreads"]
-            ),
-            transform: getCacheSize(
-              sizes.fragmentRegistry?.transform,
-              limits["fragmentRegistry.transform"]
-            ),
-          },
-          cache: {
-            fragmentQueryDocuments: getCacheSize(
-              sizes.cache?.fragmentQueryDocuments,
-              limits["cache.fragmentQueryDocuments"]
-            ),
-          },
-          addTypenameDocumentTransform: sizes.addTypenameDocumentTransform
-            ? getDocumentTransformCacheSizes(
-                sizes.addTypenameDocumentTransform,
+            links: sizes.links
+              .map((linkCache) => getLinkCacheSize(linkCache, limits))
+              .filter(Boolean),
+            queryManager: {
+              getDocumentInfo: getCacheSize(
+                sizes.queryManager.getDocumentInfo,
+                limits["queryManager.getDocumentInfo"]
+              ),
+              documentTransforms: getDocumentTransformCacheSizes(
+                sizes.queryManager.documentTransforms,
                 limits
-              )
-            : null,
-          inMemoryCache: {
-            maybeBroadcastWatch: getCacheSize(
-              sizes.inMemoryCache?.maybeBroadcastWatch,
-              limits["inMemoryCache.maybeBroadcastWatch"]
-            ),
-            executeSelectionSet: getCacheSize(
-              sizes.inMemoryCache?.executeSelectionSet,
-              limits["inMemoryCache.executeSelectionSet"]
-            ),
-            executeSubSelectedArray: getCacheSize(
-              sizes.inMemoryCache?.executeSubSelectedArray,
-              limits["inMemoryCache.executeSubSelectedArray"]
-            ),
+              ),
+            },
+            fragmentRegistry: {
+              lookup: getCacheSize(
+                sizes.fragmentRegistry?.lookup,
+                limits["fragmentRegistry.lookup"]
+              ),
+              findFragmentSpreads: getCacheSize(
+                sizes.fragmentRegistry?.findFragmentSpreads,
+                limits["fragmentRegistry.findFragmentSpreads"]
+              ),
+              transform: getCacheSize(
+                sizes.fragmentRegistry?.transform,
+                limits["fragmentRegistry.transform"]
+              ),
+            },
+            cache: {
+              fragmentQueryDocuments: getCacheSize(
+                sizes.cache?.fragmentQueryDocuments,
+                limits["cache.fragmentQueryDocuments"]
+              ),
+            },
+            addTypenameDocumentTransform: sizes.addTypenameDocumentTransform
+              ? getDocumentTransformCacheSizes(
+                  sizes.addTypenameDocumentTransform,
+                  limits
+                )
+              : null,
+            inMemoryCache: {
+              maybeBroadcastWatch: getCacheSize(
+                sizes.inMemoryCache?.maybeBroadcastWatch,
+                limits["inMemoryCache.maybeBroadcastWatch"]
+              ),
+              executeSelectionSet: getCacheSize(
+                sizes.inMemoryCache?.executeSelectionSet,
+                limits["inMemoryCache.executeSelectionSet"]
+              ),
+              executeSubSelectedArray: getCacheSize(
+                sizes.inMemoryCache?.executeSubSelectedArray,
+                limits["inMemoryCache.executeSubSelectedArray"]
+              ),
+            },
           },
         };
       },

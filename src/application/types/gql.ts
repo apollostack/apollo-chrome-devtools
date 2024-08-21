@@ -108,6 +108,12 @@ export type LinkCacheSize =
 
 export type MemoryInternals = {
   __typename: "MemoryInternals";
+  caches: MemoryInternalsCaches;
+  raw: Maybe<Scalars["JSON"]["output"]>;
+};
+
+export type MemoryInternalsCaches = {
+  __typename: "MemoryInternalsCaches";
   addTypenameDocumentTransform: Maybe<Array<DocumentTransformCacheSizes>>;
   cache: BaseCacheSizes;
   canonicalStringify: Maybe<CacheSize>;
@@ -257,47 +263,84 @@ export type MemoryInternalsQuery = {
     id: string;
     memoryInternals: {
       __typename: "MemoryInternals";
-      print: {
-        __typename: "CacheSize";
-        size: number | null;
-        limit: number | null;
-      } | null;
-      parser: {
-        __typename: "CacheSize";
-        size: number | null;
-        limit: number | null;
-      } | null;
-      canonicalStringify: {
-        __typename: "CacheSize";
-        size: number | null;
-        limit: number | null;
-      } | null;
-      links: Array<
-        | {
-            __typename: "PersistedQueryLinkCacheSizes";
-            persistedQueryHashes: {
-              __typename: "CacheSize";
-              size: number | null;
-              limit: number | null;
-            } | null;
-          }
-        | {
-            __typename: "RemoveTypenameFromVariablesLinkCacheSizes";
-            getVariableDefinitions: {
-              __typename: "CacheSize";
-              size: number | null;
-              limit: number | null;
-            } | null;
-          }
-      >;
-      queryManager: {
-        __typename: "QueryManagerCacheSizes";
-        getDocumentInfo: {
+      caches: {
+        __typename: "MemoryInternalsCaches";
+        print: {
           __typename: "CacheSize";
           size: number | null;
           limit: number | null;
         } | null;
-        documentTransforms: Array<{
+        parser: {
+          __typename: "CacheSize";
+          size: number | null;
+          limit: number | null;
+        } | null;
+        canonicalStringify: {
+          __typename: "CacheSize";
+          size: number | null;
+          limit: number | null;
+        } | null;
+        links: Array<
+          | {
+              __typename: "PersistedQueryLinkCacheSizes";
+              persistedQueryHashes: {
+                __typename: "CacheSize";
+                size: number | null;
+                limit: number | null;
+              } | null;
+            }
+          | {
+              __typename: "RemoveTypenameFromVariablesLinkCacheSizes";
+              getVariableDefinitions: {
+                __typename: "CacheSize";
+                size: number | null;
+                limit: number | null;
+              } | null;
+            }
+        >;
+        queryManager: {
+          __typename: "QueryManagerCacheSizes";
+          getDocumentInfo: {
+            __typename: "CacheSize";
+            size: number | null;
+            limit: number | null;
+          } | null;
+          documentTransforms: Array<{
+            __typename: "DocumentTransformCacheSizes";
+            cache: {
+              __typename: "CacheSize";
+              size: number | null;
+              limit: number | null;
+            } | null;
+          }> | null;
+        };
+        fragmentRegistry: {
+          __typename: "FragmentRegistryCacheSizes";
+          lookup: {
+            __typename: "CacheSize";
+            size: number | null;
+            limit: number | null;
+          } | null;
+          findFragmentSpreads: {
+            __typename: "CacheSize";
+            size: number | null;
+            limit: number | null;
+          } | null;
+          transform: {
+            __typename: "CacheSize";
+            size: number | null;
+            limit: number | null;
+          } | null;
+        };
+        cache: {
+          __typename: "BaseCacheSizes";
+          fragmentQueryDocuments: {
+            __typename: "CacheSize";
+            size: number | null;
+            limit: number | null;
+          } | null;
+        };
+        addTypenameDocumentTransform: Array<{
           __typename: "DocumentTransformCacheSizes";
           cache: {
             __typename: "CacheSize";
@@ -305,58 +348,24 @@ export type MemoryInternalsQuery = {
             limit: number | null;
           } | null;
         }> | null;
-      };
-      fragmentRegistry: {
-        __typename: "FragmentRegistryCacheSizes";
-        lookup: {
-          __typename: "CacheSize";
-          size: number | null;
-          limit: number | null;
-        } | null;
-        findFragmentSpreads: {
-          __typename: "CacheSize";
-          size: number | null;
-          limit: number | null;
-        } | null;
-        transform: {
-          __typename: "CacheSize";
-          size: number | null;
-          limit: number | null;
-        } | null;
-      };
-      cache: {
-        __typename: "BaseCacheSizes";
-        fragmentQueryDocuments: {
-          __typename: "CacheSize";
-          size: number | null;
-          limit: number | null;
-        } | null;
-      };
-      addTypenameDocumentTransform: Array<{
-        __typename: "DocumentTransformCacheSizes";
-        cache: {
-          __typename: "CacheSize";
-          size: number | null;
-          limit: number | null;
-        } | null;
-      }> | null;
-      inMemoryCache: {
-        __typename: "InMemoryCacheSizes";
-        maybeBroadcastWatch: {
-          __typename: "CacheSize";
-          size: number | null;
-          limit: number | null;
-        } | null;
-        executeSelectionSet: {
-          __typename: "CacheSize";
-          size: number | null;
-          limit: number | null;
-        } | null;
-        executeSubSelectedArray: {
-          __typename: "CacheSize";
-          size: number | null;
-          limit: number | null;
-        } | null;
+        inMemoryCache: {
+          __typename: "InMemoryCacheSizes";
+          maybeBroadcastWatch: {
+            __typename: "CacheSize";
+            size: number | null;
+            limit: number | null;
+          } | null;
+          executeSelectionSet: {
+            __typename: "CacheSize";
+            size: number | null;
+            limit: number | null;
+          } | null;
+          executeSubSelectedArray: {
+            __typename: "CacheSize";
+            size: number | null;
+            limit: number | null;
+          } | null;
+        };
       };
     } | null;
   } | null;
