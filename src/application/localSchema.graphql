@@ -25,6 +25,12 @@ type Client {
   queries: ClientQueries!
   mutations: ClientMutations!
   cache: Cache!
+  memoryInternals: MemoryInternals
+}
+
+type MemoryInternals {
+  limits: JSON!
+  sizes: JSON!
 }
 
 type ClientQueries {
