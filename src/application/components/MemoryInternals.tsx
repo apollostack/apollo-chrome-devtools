@@ -12,9 +12,6 @@ import type {
 import { Select } from "./Select";
 import type { ReactElement, ReactNode } from "react";
 import { useState } from "react";
-import { Alert } from "./Alert";
-import { selectsField } from "../../utils/graphql";
-import { QueryManager } from "@apollo/client/core/QueryManager";
 
 interface MemoryInternalsProps {
   clientId: string | undefined;
