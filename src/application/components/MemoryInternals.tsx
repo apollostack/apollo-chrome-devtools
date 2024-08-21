@@ -18,7 +18,6 @@ import { ButtonGroup } from "./ButtonGroup";
 import { Button } from "./Button";
 import { Tooltip } from "./Tooltip";
 import { JSONTreeViewer } from "./JSONTreeViewer";
-import { client } from "..";
 
 interface MemoryInternalsProps {
   clientId: string | undefined;
