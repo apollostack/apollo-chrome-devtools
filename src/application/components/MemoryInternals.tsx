@@ -21,67 +21,69 @@ const MEMORY_INTERNALS_QUERY: TypedDocumentNode<
     client(id: $clientId) {
       id
       memoryInternals {
-        print {
-          ...CacheSizeFields
-        }
-        parser {
-          ...CacheSizeFields
-        }
-        canonicalStringify {
-          ...CacheSizeFields
-        }
-        links {
-          ... on PersistedQueryLinkCacheSizes {
-            persistedQueryHashes {
-              ...CacheSizeFields
-            }
-          }
-          ... on RemoveTypenameFromVariablesLinkCacheSizes {
-            getVariableDefinitions {
-              ...CacheSizeFields
-            }
-          }
-        }
-        queryManager {
-          getDocumentInfo {
+        caches {
+          print {
             ...CacheSizeFields
           }
-          documentTransforms {
+          parser {
+            ...CacheSizeFields
+          }
+          canonicalStringify {
+            ...CacheSizeFields
+          }
+          links {
+            ... on PersistedQueryLinkCacheSizes {
+              persistedQueryHashes {
+                ...CacheSizeFields
+              }
+            }
+            ... on RemoveTypenameFromVariablesLinkCacheSizes {
+              getVariableDefinitions {
+                ...CacheSizeFields
+              }
+            }
+          }
+          queryManager {
+            getDocumentInfo {
+              ...CacheSizeFields
+            }
+            documentTransforms {
+              cache {
+                ...CacheSizeFields
+              }
+            }
+          }
+          fragmentRegistry {
+            lookup {
+              ...CacheSizeFields
+            }
+            findFragmentSpreads {
+              ...CacheSizeFields
+            }
+            transform {
+              ...CacheSizeFields
+            }
+          }
+          cache {
+            fragmentQueryDocuments {
+              ...CacheSizeFields
+            }
+          }
+          addTypenameDocumentTransform {
             cache {
               ...CacheSizeFields
             }
           }
-        }
-        fragmentRegistry {
-          lookup {
-            ...CacheSizeFields
-          }
-          findFragmentSpreads {
-            ...CacheSizeFields
-          }
-          transform {
-            ...CacheSizeFields
-          }
-        }
-        cache {
-          fragmentQueryDocuments {
-            ...CacheSizeFields
-          }
-        }
-        addTypenameDocumentTransform {
-          cache {
-            ...CacheSizeFields
-          }
-        }
-        inMemoryCache {
-          maybeBroadcastWatch {
-            ...CacheSizeFields
-          }
-          executeSelectionSet {
-            ...CacheSizeFields
-          }
-          executeSubSelectedArray {
-            ...CacheSizeFields
+          inMemoryCache {
+            maybeBroadcastWatch {
+              ...CacheSizeFields
+            }
+            executeSelectionSet {
+              ...CacheSizeFields
+            }
+            executeSubSelectedArray {
+              ...CacheSizeFields
+            }
           }
         }
       }
