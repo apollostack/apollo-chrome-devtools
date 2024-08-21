@@ -126,6 +126,7 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
   const memoryInternals = data?.client?.memoryInternals;
   const caches = memoryInternals?.caches;
 
+  // TODO: Show a message for clients older < 3.9
   if (!caches) {
     return (
       <Layout>
