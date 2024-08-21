@@ -47,6 +47,7 @@ export type Client = {
   __typename: "Client";
   cache: Scalars["Cache"]["output"];
   id: Scalars["String"]["output"];
+  memoryInternals: Maybe<MemoryInternals>;
   mutations: ClientMutations;
   name: Maybe<Scalars["String"]["output"]>;
   queries: ClientQueries;
@@ -69,6 +70,12 @@ export type GraphQLErrorSourceLocation = {
   __typename: "GraphQLErrorSourceLocation";
   column: Scalars["Int"]["output"];
   line: Scalars["Int"]["output"];
+};
+
+export type MemoryInternals = {
+  __typename: "MemoryInternals";
+  limits: Scalars["JSON"]["output"];
+  sizes: Scalars["JSON"]["output"];
 };
 
 export type Query = {
@@ -181,6 +188,21 @@ export type GetCacheVariables = Exact<{
 
 export type GetCache = {
   client: { __typename: "Client"; id: string; cache: Cache } | null;
+};
+
+export type MemoryInternalsQueryVariables = Exact<{
+  clientId: Scalars["ID"]["input"];
+}>;
+
+export type MemoryInternalsQuery = {
+  client: {
+    __typename: "Client";
+    memoryInternals: {
+      __typename: "MemoryInternals";
+      limits: JSON;
+      sizes: JSON;
+    } | null;
+  } | null;
 };
 
 export type GetMutationsVariables = Exact<{
