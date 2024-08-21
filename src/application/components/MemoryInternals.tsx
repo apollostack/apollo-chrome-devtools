@@ -1,5 +1,7 @@
 import type { TypedDocumentNode } from "@apollo/client";
 import { gql, useQuery } from "@apollo/client";
+import IconOutlink from "@apollo/icons/default/IconOutlink.svg";
+
 import { FullWidthLayout } from "./Layouts/FullWidthLayout";
 import { PageSpinner } from "./PageSpinner";
 import type {
@@ -44,7 +46,17 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
           Memory
         </h1>
         <p className="text-secondary dark:text-secondary-dark">
-          Learn more in the docs!
+          Learn how to manage memory in the{" "}
+          <a
+            href="https://www.apollographql.com/docs/react/caching/memory-management/"
+            className="font-medium underline inline-flex items-center gap-2"
+            target="_blank"
+            rel="noopener noreferer noreferrer"
+          >
+            docs
+            <IconOutlink className="size-4" />
+          </a>
+          .
         </p>
       </header>
       <FullWidthLayout.Main className="overflow-auto">
