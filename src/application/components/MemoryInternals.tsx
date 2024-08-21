@@ -46,7 +46,8 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
           Memory
         </h1>
         <p className="text-secondary dark:text-secondary-dark">
-          Learn how to manage memory in the{" "}
+          Learn how Apollo Client manages memory and how to set custom cache
+          size limits in the{" "}
           <a
             href="https://www.apollographql.com/docs/react/caching/memory-management/"
             className="font-medium underline inline-flex items-center gap-2"
