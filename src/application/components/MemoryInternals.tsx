@@ -100,8 +100,24 @@ const MEMORY_INTERNALS_QUERY: TypedDocumentNode<
   }
 `;
 
+type InternalCache =
+  | "print"
+  | "parser"
+  | "canonicalStringify"
+  | "links"
+  | "queryManager.getDocumentInfo"
+  | "queryManager.documentTransforms"
+  | "fragmentRegistry.lookup"
+  | "fragmentRegistry.findFragmentSpreads"
+  | "fragmentRegistry.transform"
+  | "cache.fragmentQueryDocuments"
+  | "addTypenameDocumentTransform"
+  | "inMemoryCache.executeSelectionSet"
+  | "inMemoryCache.executeSubSelectedArray"
+  | "inMemoryCache.maybeBroadcastWatch";
+
 export function MemoryInternals({ clientId }: MemoryInternalsProps) {
-  const [selectedCache, setSelectedCache] = useState("print");
+  const [selectedCache, setSelectedCache] = useState<InternalCache>("print");
   const { data, networkStatus, error } = useQuery(MEMORY_INTERNALS_QUERY, {
     variables: { clientId: clientId as string },
     skip: !clientId,
@@ -136,7 +152,7 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
     );
   }
 
-  const cacheComponents: Record<string, ReactElement> = {
+  const cacheComponents: Record<InternalCache, ReactElement> = {
     print: <CacheSize cacheSize={caches.print} />,
     parser: <CacheSize cacheSize={caches.parser} />,
     canonicalStringify: <CacheSize cacheSize={caches.canonicalStringify} />,
@@ -159,7 +175,7 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
         <Select
           defaultValue="print"
           value={selectedCache}
-          onValueChange={setSelectedCache}
+          onValueChange={(value) => setSelectedCache(value as InternalCache)}
         >
           {Object.keys(cacheComponents).map((key) => (
             <SelectOption label={key} key={key} />
