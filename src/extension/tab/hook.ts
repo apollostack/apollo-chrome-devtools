@@ -131,6 +131,12 @@ handleRpc("getCache", (clientId) => {
   return getClientById(clientId)?.cache.extract(true) ?? {};
 });
 
+handleRpc("getMemoryInternals", (clientId) => {
+  const client = getClientById(clientId);
+
+  return client?.getMemoryInternals?.();
+});
+
 function getClientById(clientId: string) {
   const [client] =
     [...knownClients.entries()].find(([, id]) => id === clientId) ?? [];

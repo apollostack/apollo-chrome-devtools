@@ -7,6 +7,11 @@ import { deserializeError, serializeError } from "./errorSerialization";
 import type { MessageAdapter } from "./messageAdapters";
 import { MessageType, isDevtoolsMessage } from "./messages";
 import type { MutationDetails, QueryDetails } from "./tab/helpers";
+import type { ApolloClient } from "@apollo/client";
+
+type MemoryInternals = ReturnType<
+  NonNullable<ApolloClient<unknown>["getMemoryInternals"]>
+>;
 
 export type RPCRequest = {
   getClients(): ApolloClientInfo[];
@@ -15,6 +20,7 @@ export type RPCRequest = {
   getMutations(clientId: string): MutationDetails[];
   getCache(clientId: string): JSONObject;
   getErrorCodes(version: string): Promise<ErrorCodes | undefined>;
+  getMemoryInternals(clientId: string): MemoryInternals | undefined;
 };
 
 export interface RpcClient {
