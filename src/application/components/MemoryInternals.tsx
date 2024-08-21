@@ -252,7 +252,9 @@ function Layout({ children }: { children: ReactNode }) {
           .
         </p>
       </header>
-      <FullWidthLayout.Main className="gap-4">{children}</FullWidthLayout.Main>
+      <FullWidthLayout.Main className="flex flex-col gap-4 overflow-hidden">
+        {children}
+      </FullWidthLayout.Main>
     </FullWidthLayout>
   );
 }
