@@ -99,7 +99,7 @@ export const Select = ({
           align={align}
           sideOffset={6}
           position="popper"
-          className="border border-primary bg-primary dark:bg-primary-dark dark:border-primary-dark shadow-dropdown overflow-hidden rounded-lg min-w-80 max-h-[calc(100vh-8rem)]"
+          className="border border-primary bg-primary dark:bg-primary-dark dark:border-primary-dark shadow-dropdown overflow-hidden rounded-lg min-w-80 max-h-[--radix-select-content-available-height]"
         >
           <SelectBase.ScrollUpButton
             className={scrollIndicator({ position: "top" })}
