@@ -48,11 +48,12 @@ const scrollIndicator = cva(
     "items-center",
     "justify-center",
     "cursor-default",
-    "w-full",
     "py-2",
     "bg-primary",
     "dark:bg-primary-dark",
     "z-10",
+    "left-px",
+    "right-px",
   ],
   {
     variants: {
