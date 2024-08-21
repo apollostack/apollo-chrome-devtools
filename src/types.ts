@@ -1,4 +1,4 @@
-import type { ApolloQueryResult } from "@apollo/client";
+import type { ApolloClient, ApolloQueryResult } from "@apollo/client";
 
 export type QueryResult = ApolloQueryResult<any>;
 
@@ -26,3 +26,7 @@ export interface ApolloClientInfo {
   queryCount: number;
   mutationCount: number;
 }
+
+export type MemoryInternals = ReturnType<
+  NonNullable<ApolloClient<unknown>["getMemoryInternals"]>
+>;

@@ -1,17 +1,17 @@
 import type { ErrorCodes } from "@apollo/client/invariantErrorCodes";
 import type { JSONObject } from "../application/types/json";
-import type { ApolloClientInfo, NoInfer, SafeAny } from "../types";
+import type {
+  ApolloClientInfo,
+  MemoryInternals,
+  NoInfer,
+  SafeAny,
+} from "../types";
 import { createId } from "../utils/createId";
 import { RPC_MESSAGE_TIMEOUT } from "./errorMessages";
 import { deserializeError, serializeError } from "./errorSerialization";
 import type { MessageAdapter } from "./messageAdapters";
 import { MessageType, isDevtoolsMessage } from "./messages";
 import type { MutationDetails, QueryDetails } from "./tab/helpers";
-import type { ApolloClient } from "@apollo/client";
-
-type MemoryInternals = ReturnType<
-  NonNullable<ApolloClient<unknown>["getMemoryInternals"]>
->;
 
 export type RPCRequest = {
   getClients(): ApolloClientInfo[];
