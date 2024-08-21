@@ -71,7 +71,7 @@ type MemoryInternals {
   print: CacheSize
   parser: CacheSize
   canonicalStringify: CacheSize
-  links: [LinkCacheSize!]
+  links: [LinkCacheSize!]!
   queryManager: QueryManagerCacheSizes!
   fragmentRegistry: FragmentRegistryCacheSizes!
   cache: BaseCacheSizes!
