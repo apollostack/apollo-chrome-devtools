@@ -8,6 +8,8 @@ import type {
   MemoryInternalsQuery,
   MemoryInternalsQueryVariables,
 } from "../types/gql";
+import { Select } from "./Select";
+import { useState } from "react";
 
 interface MemoryInternalsProps {
   clientId: string | undefined;
@@ -97,6 +99,7 @@ const MEMORY_INTERNALS_QUERY: TypedDocumentNode<
 `;
 
 export function MemoryInternals({ clientId }: MemoryInternalsProps) {
+  const [selectedCache, setSelectedCache] = useState("print");
   const { data, loading, error } = useQuery(MEMORY_INTERNALS_QUERY, {
     variables: { clientId: clientId as string },
     skip: !clientId,
@@ -132,9 +135,38 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
         {loading ? (
           <PageSpinner />
         ) : (
-          <pre>{JSON.stringify(data?.client, null, 2)}</pre>
+          <>
+            <Select
+              defaultValue="print"
+              value={selectedCache}
+              onValueChange={setSelectedCache}
+            >
+              <SelectOption label="print" />
+              <SelectOption label="parser" />
+              <SelectOption label="canonicalStringify" />
+              <SelectOption label="links" />
+              <SelectOption label="queryManager.getDocumentInfo" />
+              <SelectOption label="queryManager.documentTransforms" />
+              <SelectOption label="fragmentRegistry.lookup" />
+              <SelectOption label="fragmentRegistry.findFragmentSpreads" />
+              <SelectOption label="fragmentRegistry.transform" />
+              <SelectOption label="cache.fragmentQueryDocuments" />
+              <SelectOption label="addTypenameDocumentTransform" />
+              <SelectOption label="inMemoryCache.executeSelectionSet" />
+              <SelectOption label="inMemoryCache.executeSubSelectedArray" />
+              <SelectOption label="inMemoryCache.maybeBroadcastWatch" />
+            </Select>
+          </>
         )}
       </FullWidthLayout.Main>
     </FullWidthLayout>
+  );
+}
+
+function SelectOption({ label }: { label: string }) {
+  return (
+    <Select.Option value={label}>
+      <span className="font-code">{label}</span>
+    </Select.Option>
   );
 }
