@@ -1,7 +1,11 @@
 import type { RpcClient } from "../extension/rpc";
 import typeDefs from "./localSchema.graphql";
 import { makeExecutableSchema } from "@graphql-tools/schema";
-import type { Resolvers } from "./types/resolvers";
+import type {
+  Resolvers,
+  PersistedQueryLinkCacheSizes,
+  RemoveTypenameFromVariablesLinkCacheSizes,
+} from "./types/resolvers";
 import { getOperationName } from "@apollo/client/utilities";
 import { print } from "graphql";
 
@@ -30,7 +34,74 @@ function createResolvers(client: RpcClient): Resolvers {
           client.id
         );
 
-        return memoryInternals ?? null;
+        if (!memoryInternals) {
+          return null;
+        }
+
+        const sizes = memoryInternals.sizes;
+        const limits = memoryInternals.limits;
+
+        return {
+          print: getCacheSize(sizes.print, limits.print),
+          parser: getCacheSize(sizes.parser, limits.parser),
+          canonicalStringify: getCacheSize(
+            sizes.canonicalStringify,
+            limits.canonicalStringify
+          ),
+          links: sizes.links
+            .map((linkCache) => getLinkCacheSize(linkCache, limits))
+            .filter(Boolean),
+          queryManager: {
+            getDocumentInfo: getCacheSize(
+              sizes.queryManager.getDocumentInfo,
+              limits["queryManager.getDocumentInfo"]
+            ),
+            documentTransforms: getDocumentTransformCacheSizes(
+              sizes.queryManager.documentTransforms,
+              limits
+            ),
+          },
+          fragmentRegistry: {
+            lookup: getCacheSize(
+              sizes.fragmentRegistry?.lookup,
+              limits["fragmentRegistry.lookup"]
+            ),
+            findFragmentSpreads: getCacheSize(
+              sizes.fragmentRegistry?.findFragmentSpreads,
+              limits["fragmentRegistry.findFragmentSpreads"]
+            ),
+            transform: getCacheSize(
+              sizes.fragmentRegistry?.transform,
+              limits["fragmentRegistry.transform"]
+            ),
+          },
+          cache: {
+            fragmentQueryDocuments: getCacheSize(
+              sizes.cache?.fragmentQueryDocuments,
+              limits["cache.fragmentQueryDocuments"]
+            ),
+          },
+          addTypenameDocumentTransform: sizes.addTypenameDocumentTransform
+            ? getDocumentTransformCacheSizes(
+                sizes.addTypenameDocumentTransform,
+                limits
+              )
+            : null,
+          inMemoryCache: {
+            maybeBroadcastWatch: getCacheSize(
+              sizes.inMemoryCache?.maybeBroadcastWatch,
+              limits["inMemoryCache.maybeBroadcastWatch"]
+            ),
+            executeSelectionSet: getCacheSize(
+              sizes.inMemoryCache?.executeSelectionSet,
+              limits["inMemoryCache.executeSelectionSet"]
+            ),
+            executeSubSelectedArray: getCacheSize(
+              sizes.inMemoryCache?.executeSubSelectedArray,
+              limits["inMemoryCache.executeSubSelectedArray"]
+            ),
+          },
+        };
       },
     },
     ClientQueries: {
@@ -86,4 +157,81 @@ function createResolvers(client: RpcClient): Resolvers {
       },
     },
   };
+}
+
+type MemoryLimits = Record<string, number | undefined>;
+
+function getCacheSize(size: number | undefined, limit: number | undefined) {
+  if (!size) {
+    return null;
+  }
+
+  return { size, limit: limit ?? null };
+}
+
+function getDocumentTransformCacheSizes(
+  caches: Array<{ cache: number }>,
+  limits: MemoryLimits
+) {
+  return caches.map(({ cache }) => ({
+    cache: getCacheSize(cache, limits["documentTransform.cache"]),
+  }));
+}
+
+interface PersistedQueryLinkCache {
+  PersistedQueryLink: {
+    persistedQueryHashes: number;
+  };
+}
+
+function isPersistedQueryLinkCache(
+  cache: unknown
+): cache is PersistedQueryLinkCache {
+  return (
+    typeof cache === "object" && cache !== null && "PersistedQueryLink" in cache
+  );
+}
+
+interface RemoveTypenameFromVariablesLinkCache {
+  removeTypenameFromVariables: {
+    getVariableDefinitions: number;
+  };
+}
+
+function isRemoveTypenameFromVariablesLinkCache(
+  cache: unknown
+): cache is RemoveTypenameFromVariablesLinkCache {
+  return (
+    typeof cache === "object" &&
+    cache !== null &&
+    "removeTypenameFromVariables" in cache
+  );
+}
+
+function getLinkCacheSize(
+  linkCache: unknown,
+  limits: MemoryLimits
+):
+  | PersistedQueryLinkCacheSizes
+  | RemoveTypenameFromVariablesLinkCacheSizes
+  | null {
+  if (isPersistedQueryLinkCache(linkCache)) {
+    return {
+      persistedQueryHashes: {
+        size: linkCache.PersistedQueryLink.persistedQueryHashes,
+        limit: limits["PersistedQueryLink.persistedQueryHashes"],
+      },
+    } satisfies PersistedQueryLinkCacheSizes;
+  }
+
+  if (isRemoveTypenameFromVariablesLinkCache(linkCache)) {
+    return {
+      getVariableDefinitions: {
+        size: linkCache.removeTypenameFromVariables.getVariableDefinitions,
+        limit: limits["removeTypenameFromVariables.getVariableDefinitions"],
+      },
+    } satisfies RemoveTypenameFromVariablesLinkCacheSizes;
+  }
+
+  return null;
 }
