@@ -71,6 +71,7 @@
     "zen-observable": "^0.10.0"
   },
   "devDependencies": {
+    "@0no-co/graphqlsp": "^1.12.13",
     "@changesets/changelog-github": "0.5.0",
     "@changesets/cli": "2.27.10",
     "@graphql-codegen/cli": "5.0.3",

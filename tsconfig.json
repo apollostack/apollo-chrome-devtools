@@ -14,7 +14,13 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "declaration": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "plugins": [
+      {
+        "name": "@0no-co/graphqlsp",
+        "schema": "./src/application/localSchema.graphql"
+      }
+    ]
   },
   "$schema": "https://json.schemastore.org/tsconfig",
   "compileOnSave": true,
