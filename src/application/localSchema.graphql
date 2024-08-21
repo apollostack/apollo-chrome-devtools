@@ -24,7 +24,7 @@ type BaseCacheSizes {
 
 type CacheSize {
   limit: Int
-  value: Int
+  size: Int
 }
 
 type Client {
