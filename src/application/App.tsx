@@ -270,14 +270,17 @@ export const App = () => {
             />
           </TabErrorBoundary>
         </Tabs.Content>
-        <Tabs.Content value={Screens.Memory}>
-          <TabErrorBoundary remarks="Error on Memory tab:">
-            <MemoryInternals clientId={selectedClientId} />
-          </TabErrorBoundary>
-        </Tabs.Content>
         <Tabs.Content className="flex-1 overflow-hidden" value={Screens.Cache}>
           <TabErrorBoundary remarks="Error on Cache tab:">
             <Cache clientId={selectedClientId} />
+          </TabErrorBoundary>
+        </Tabs.Content>
+        <Tabs.Content
+          className="flex flex-1 overflow-hidden"
+          value={Screens.Memory}
+        >
+          <TabErrorBoundary remarks="Error on Memory tab:">
+            <MemoryInternals clientId={selectedClientId} />
           </TabErrorBoundary>
         </Tabs.Content>
       </Tabs>
