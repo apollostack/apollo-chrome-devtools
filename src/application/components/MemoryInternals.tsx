@@ -38,8 +38,16 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
   }
 
   return (
-    <FullWidthLayout className="overflow-auto p-4">
-      <FullWidthLayout.Main>
+    <FullWidthLayout className="p-4 gap-4">
+      <header>
+        <h1 className="font-medium text-2xl text-heading dark:text-heading-dark">
+          Memory
+        </h1>
+        <p className="text-secondary dark:text-secondary-dark">
+          Learn more in the docs!
+        </p>
+      </header>
+      <FullWidthLayout.Main className="overflow-auto">
         {loading ? (
           <PageSpinner />
         ) : (
