@@ -13,11 +13,12 @@ import type {
 } from "../types/gql";
 import { Select } from "./Select";
 import type { ReactElement, ReactNode } from "react";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ButtonGroup } from "./ButtonGroup";
 import { Button } from "./Button";
 import { Tooltip } from "./Tooltip";
 import { JSONTreeViewer } from "./JSONTreeViewer";
+import throttle from "lodash.throttle";
 
 interface MemoryInternalsProps {
   clientId: string | undefined;
@@ -123,9 +124,91 @@ type InternalCache =
   | "inMemoryCache.executeSubSelectedArray"
   | "inMemoryCache.maybeBroadcastWatch";
 
+const SAMPLE_RATE_MS = 5000;
+
+const samples: Partial<
+  Record<InternalCache, Array<{ value: number; time: Date }>>
+> = {
+  print: [],
+  parser: [],
+  canonicalStringify: [],
+};
+
+type Caches = NonNullable<
+  NonNullable<MemoryInternalsQuery["client"]>["memoryInternals"]
+>["caches"];
+
+const sample = throttle((caches: Caches) => {
+  samples.print?.push({ value: caches.print?.size ?? 0, time: new Date() });
+}, SAMPLE_RATE_MS);
+
+const cacheComponents: Record<
+  InternalCache,
+  { key: InternalCache; render: (caches: Caches) => JSX.Element }
+> = {
+  print: {
+    key: "print",
+    render: (caches) => <CacheSize cacheSize={caches.print} />,
+  },
+  parser: {
+    key: "parser",
+    render: (caches) => <CacheSize cacheSize={caches.parser} />,
+  },
+  canonicalStringify: {
+    key: "canonicalStringify",
+    render: (caches) => <CacheSize cacheSize={caches.canonicalStringify} />,
+  },
+  links: { key: "links", render: () => <TODOCacheSize /> },
+  ["queryManager.getDocumentInfo"]: {
+    key: "queryManager.getDocumentInfo",
+    render: () => <TODOCacheSize />,
+  },
+  ["queryManager.documentTransforms"]: {
+    key: "queryManager.documentTransforms",
+    render: () => <TODOCacheSize />,
+  },
+  ["fragmentRegistry.lookup"]: {
+    key: "fragmentRegistry.lookup",
+    render: () => <TODOCacheSize />,
+  },
+  ["fragmentRegistry.findFragmentSpreads"]: {
+    key: "fragmentRegistry.findFragmentSpreads",
+    render: () => <TODOCacheSize />,
+  },
+  ["fragmentRegistry.transform"]: {
+    key: "fragmentRegistry.transform",
+    render: () => <TODOCacheSize />,
+  },
+  ["cache.fragmentQueryDocuments"]: {
+    key: "cache.fragmentQueryDocuments",
+    render: () => <TODOCacheSize />,
+  },
+  ["addTypenameDocumentTransform"]: {
+    key: "addTypenameDocumentTransform",
+    render: () => <TODOCacheSize />,
+  },
+  ["inMemoryCache.executeSelectionSet"]: {
+    key: "inMemoryCache.executeSelectionSet",
+    render: () => <TODOCacheSize />,
+  },
+  ["inMemoryCache.executeSubSelectedArray"]: {
+    key: "inMemoryCache.executeSubSelectedArray",
+    render: () => <TODOCacheSize />,
+  },
+  ["inMemoryCache.maybeBroadcastWatch"]: {
+    key: "inMemoryCache.maybeBroadcastWatch",
+    render: () => <TODOCacheSize />,
+  },
+};
+
+type ValueOf<T> = { [K in keyof T]: T[K] }[keyof T];
+
 export function MemoryInternals({ clientId }: MemoryInternalsProps) {
-  const [selectedCache, setSelectedCache] = useState<InternalCache>("print");
+  const [selectedCache, setSelectedCache] = useState<
+    ValueOf<typeof cacheComponents>
+  >(cacheComponents.print);
   const [selectedView, setSelectedView] = useState<"raw" | "chart">("chart");
+
   const { data, networkStatus, error } = useQuery(MEMORY_INTERNALS_QUERY, {
     variables: { clientId: clientId as string },
     skip: !clientId,
@@ -136,6 +219,15 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
     throw error;
   }
 
+  const memoryInternals = data?.client?.memoryInternals;
+  const caches = memoryInternals?.caches;
+
+  useEffect(() => {
+    if (caches) {
+      sample(caches);
+    }
+  }, [caches]);
+
   if (networkStatus === NetworkStatus.loading) {
     return (
       <EmptyLayout>
@@ -143,9 +235,6 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
       </EmptyLayout>
     );
   }
-
-  const memoryInternals = data?.client?.memoryInternals;
-  const caches = memoryInternals?.caches;
 
   // TODO: Show a message for clients older < 3.9
   if (!caches) {
@@ -159,23 +248,6 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
       </EmptyLayout>
     );
   }
-
-  const cacheComponents: Record<InternalCache, ReactElement> = {
-    print: <CacheSize cacheSize={caches.print} />,
-    parser: <CacheSize cacheSize={caches.parser} />,
-    canonicalStringify: <CacheSize cacheSize={caches.canonicalStringify} />,
-    links: <TODOCacheSize />,
-    ["queryManager.getDocumentInfo"]: <TODOCacheSize />,
-    ["queryManager.documentTransforms"]: <TODOCacheSize />,
-    ["fragmentRegistry.lookup"]: <TODOCacheSize />,
-    ["fragmentRegistry.findFragmentSpreads"]: <TODOCacheSize />,
-    ["fragmentRegistry.transform"]: <TODOCacheSize />,
-    ["cache.fragmentQueryDocuments"]: <TODOCacheSize />,
-    ["addTypenameDocumentTransform"]: <TODOCacheSize />,
-    ["inMemoryCache.executeSelectionSet"]: <TODOCacheSize />,
-    ["inMemoryCache.executeSubSelectedArray"]: <TODOCacheSize />,
-    ["inMemoryCache.maybeBroadcastWatch"]: <TODOCacheSize />,
-  };
 
   return (
     <FullWidthLayout className="p-4 gap-4">
@@ -224,16 +296,16 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
           <>
             <Select
               defaultValue="print"
-              value={selectedCache}
+              value={selectedCache.key}
               onValueChange={(value) =>
-                setSelectedCache(value as InternalCache)
+                setSelectedCache(cacheComponents[value as InternalCache])
               }
             >
-              {Object.keys(cacheComponents).map((key) => (
+              {Object.values(cacheComponents).map(({ key }) => (
                 <SelectOption label={key} key={key} />
               ))}
             </Select>
-            {cacheComponents[selectedCache]}
+            {selectedCache.render(caches)}
           </>
         ) : selectedView === "raw" ? (
           <JSONTreeViewer hideRoot data={memoryInternals.raw} />
