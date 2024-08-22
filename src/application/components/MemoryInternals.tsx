@@ -12,13 +12,23 @@ import type {
   MemoryInternalsQueryVariables,
 } from "../types/gql";
 import { Select } from "./Select";
-import type { ReactElement, ReactNode } from "react";
-import { useEffect, useMemo, useState } from "react";
+import type { ReactNode } from "react";
+import { useState } from "react";
 import { ButtonGroup } from "./ButtonGroup";
 import { Button } from "./Button";
 import { Tooltip } from "./Tooltip";
 import { JSONTreeViewer } from "./JSONTreeViewer";
-import throttle from "lodash.throttle";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  Line,
+  ReferenceLine,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+} from "recharts";
+import { colors } from "@apollo/brand";
 
 interface MemoryInternalsProps {
   clientId: string | undefined;
@@ -128,8 +138,8 @@ type InternalCache =
   | "inMemoryCache.executeSubSelectedArray"
   | "inMemoryCache.maybeBroadcastWatch";
 
-const SAMPLE_RATE_MS = 5000;
-const samples: Array<{ timestamp: Date; caches: Caches }> = [];
+// const SAMPLE_RATE_MS = 5000;
+// const samples: Array<{ timestamp: Date; caches: Caches }> = [];
 
 const cacheComponents: Record<
   InternalCache,
@@ -341,10 +351,59 @@ function CacheSize({ cacheSize }: { cacheSize: CacheSize | null }) {
   }
 
   return (
-    <>
-      <p>Limit: {cacheSize.limit}</p>
-      <p>Size: {cacheSize.size}</p>
-    </>
+    <ResponsiveContainer height="100%" width="100%">
+      <AreaChart
+        data={[
+          { name: "4:45", value: 100 },
+          { name: "4:46", value: 200 },
+          { name: "4:47", value: 100 },
+          { name: "4:48", value: 400 },
+          { name: "4:49", value: 500 },
+          { name: "4:50", value: 700 },
+          { name: "4:51", value: 200 },
+          { name: "4:52", value: 100 },
+          { name: "4:53", value: 50 },
+        ]}
+      >
+        <defs>
+          <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+            <stop
+              offset="5%"
+              stopColor={colors.tokens.flowchart.d.dark}
+              stopOpacity={0.8}
+            />
+            <stop
+              offset="95%"
+              stopColor={colors.tokens.flowchart.d.dark}
+              stopOpacity={0}
+            />
+          </linearGradient>
+        </defs>
+        <XAxis
+          dataKey="name"
+          stroke={colors.tokens.border.primary.dark}
+          label={{ fill: colors.tokens.text.primary.dark }}
+        />
+        <YAxis stroke={colors.tokens.border.primary.dark} />
+        <CartesianGrid
+          stroke={colors.tokens.border.primary.dark}
+          strokeDasharray="3 3"
+        />
+        <Area
+          type="monotone"
+          dataKey="value"
+          stroke={colors.tokens.border.info.dark}
+          fillOpacity={1}
+          fill="url(#colorValue)"
+        />
+        <ReferenceLine
+          y={600}
+          label="Limit"
+          stroke={colors.tokens.border.error.dark}
+          strokeDasharray="3 3"
+        />
+      </AreaChart>
+    </ResponsiveContainer>
   );
 }
 
