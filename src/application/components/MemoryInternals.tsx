@@ -1,8 +1,10 @@
 import type { TypedDocumentNode } from "@apollo/client";
 import { gql, NetworkStatus, useQuery } from "@apollo/client";
 import IconOutlink from "@apollo/icons/default/IconOutlink.svg";
+import IconOutlinkSm from "@apollo/icons/small/IconOutlink.svg";
 import IconOperations from "@apollo/icons/default/IconOperations.svg";
 import IconObserve from "@apollo/icons/default/IconObserve.svg";
+import IconInfo from "@apollo/icons/default/IconInfo.svg";
 
 import { FullWidthLayout } from "./Layouts/FullWidthLayout";
 import { PageSpinner } from "./PageSpinner";
@@ -12,7 +14,7 @@ import type {
   MemoryInternalsQueryVariables,
 } from "../types/gql";
 import { Select } from "./Select";
-import type { ReactNode } from "react";
+import type { ReactElement, ReactNode } from "react";
 import { useState } from "react";
 import { ButtonGroup } from "./ButtonGroup";
 import { Button } from "./Button";
@@ -22,7 +24,6 @@ import {
   Area,
   AreaChart,
   CartesianGrid,
-  Line,
   ReferenceLine,
   ResponsiveContainer,
   XAxis,
@@ -143,10 +144,33 @@ type InternalCache =
 
 const cacheComponents: Record<
   InternalCache,
-  { render: (caches: Caches) => JSX.Element }
+  { render: (caches: Caches) => JSX.Element; description?: ReactElement }
 > = {
   print: {
     render: (caches) => <CacheSize cacheSize={caches.print} />,
+    description: (
+      <>
+        <p>
+          Cache size for the{" "}
+          <a
+            href="https://github.com/apollographql/apollo-client/blob/main/src/utilities/graphql/print.ts"
+            target="_blank"
+            rel="noopener noreferer noreferrer"
+            className="inline-flex items-center underline font-medium gap-1"
+          >
+            print <IconOutlinkSm className="size-3" />
+          </a>{" "}
+          function.
+        </p>
+        <p>
+          It is called with transformed <code>DocumentNode</code>s.
+        </p>
+        <p>
+          This method is called to transform a GraphQL query AST parsed by{" "}
+          <code>gql</code> back into a GraphQL string.
+        </p>
+      </>
+    ),
   },
   parser: {
     render: (caches) => <CacheSize cacheSize={caches.parser} />,
@@ -271,17 +295,32 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
       <FullWidthLayout.Main className="flex flex-col gap-4 overflow-auto items-start">
         {selectedView === "chart" ? (
           <>
-            <Select
-              defaultValue="print"
-              value={selectedCache}
-              onValueChange={(value) =>
-                setSelectedCache(value as InternalCache)
-              }
-            >
-              {Object.keys(cacheComponents).map((key) => (
-                <SelectOption label={key} key={key} />
-              ))}
-            </Select>
+            <div className="flex items-center gap-2">
+              <Select
+                defaultValue="print"
+                value={selectedCache}
+                onValueChange={(value) =>
+                  setSelectedCache(value as InternalCache)
+                }
+              >
+                {Object.keys(cacheComponents).map((key) => (
+                  <SelectOption label={key} key={key} />
+                ))}
+              </Select>
+              {selectedCacheComponent.description && (
+                <Tooltip
+                  content={
+                    <div className="flex flex-col gap-2">
+                      {selectedCacheComponent.description}
+                    </div>
+                  }
+                >
+                  <span>
+                    <IconInfo className="text-icon-primary dark:text-icon-primary-dark size-4" />
+                  </span>
+                </Tooltip>
+              )}
+            </div>
             {selectedCacheComponent.render(caches)}
           </>
         ) : selectedView === "raw" ? (
