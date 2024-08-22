@@ -179,7 +179,7 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
 
   return (
     <FullWidthLayout className="p-4 gap-4">
-      <div className="flex gap-2 justify-between">
+      <div className="flex gap-2 justify-between items-start">
         <header className="flex flex-col gap-2">
           <h1 className="font-medium text-2xl text-heading dark:text-heading-dark">
             Memory
