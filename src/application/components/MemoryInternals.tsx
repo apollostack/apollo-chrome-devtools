@@ -143,70 +143,54 @@ type InternalCache =
 
 const cacheComponents: Record<
   InternalCache,
-  { key: InternalCache; render: (caches: Caches) => JSX.Element }
+  { render: (caches: Caches) => JSX.Element }
 > = {
   print: {
-    key: "print",
     render: (caches) => <CacheSize cacheSize={caches.print} />,
   },
   parser: {
-    key: "parser",
     render: (caches) => <CacheSize cacheSize={caches.parser} />,
   },
   canonicalStringify: {
-    key: "canonicalStringify",
     render: (caches) => <CacheSize cacheSize={caches.canonicalStringify} />,
   },
-  links: { key: "links", render: () => <TODOCacheSize /> },
+  links: { render: () => <TODOCacheSize /> },
   ["queryManager.getDocumentInfo"]: {
-    key: "queryManager.getDocumentInfo",
     render: () => <TODOCacheSize />,
   },
   ["queryManager.documentTransforms"]: {
-    key: "queryManager.documentTransforms",
     render: () => <TODOCacheSize />,
   },
   ["fragmentRegistry.lookup"]: {
-    key: "fragmentRegistry.lookup",
     render: () => <TODOCacheSize />,
   },
   ["fragmentRegistry.findFragmentSpreads"]: {
-    key: "fragmentRegistry.findFragmentSpreads",
     render: () => <TODOCacheSize />,
   },
   ["fragmentRegistry.transform"]: {
-    key: "fragmentRegistry.transform",
     render: () => <TODOCacheSize />,
   },
   ["cache.fragmentQueryDocuments"]: {
-    key: "cache.fragmentQueryDocuments",
     render: () => <TODOCacheSize />,
   },
   ["addTypenameDocumentTransform"]: {
-    key: "addTypenameDocumentTransform",
     render: () => <TODOCacheSize />,
   },
   ["inMemoryCache.executeSelectionSet"]: {
-    key: "inMemoryCache.executeSelectionSet",
     render: () => <TODOCacheSize />,
   },
   ["inMemoryCache.executeSubSelectedArray"]: {
-    key: "inMemoryCache.executeSubSelectedArray",
     render: () => <TODOCacheSize />,
   },
   ["inMemoryCache.maybeBroadcastWatch"]: {
-    key: "inMemoryCache.maybeBroadcastWatch",
     render: () => <TODOCacheSize />,
   },
 };
 
-type ValueOf<T> = { [K in keyof T]: T[K] }[keyof T];
-
 export function MemoryInternals({ clientId }: MemoryInternalsProps) {
-  const [selectedCache, setSelectedCache] = useState<
-    ValueOf<typeof cacheComponents>
-  >(cacheComponents.print);
+  const [selectedCache, setSelectedCache] = useState<InternalCache>("print");
   const [selectedView, setSelectedView] = useState<"raw" | "chart">("chart");
+  const selectedCacheComponent = cacheComponents[selectedCache];
 
   const { data, networkStatus, error } = useQuery(MEMORY_INTERNALS_QUERY, {
     variables: { clientId: clientId as string },
@@ -289,16 +273,16 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
           <>
             <Select
               defaultValue="print"
-              value={selectedCache.key}
+              value={selectedCache}
               onValueChange={(value) =>
-                setSelectedCache(cacheComponents[value as InternalCache])
+                setSelectedCache(value as InternalCache)
               }
             >
-              {Object.values(cacheComponents).map(({ key }) => (
+              {Object.keys(cacheComponents).map((key) => (
                 <SelectOption label={key} key={key} />
               ))}
             </Select>
-            {selectedCache.render(caches)}
+            {selectedCacheComponent.render(caches)}
           </>
         ) : selectedView === "raw" ? (
           <JSONTreeViewer hideRoot data={memoryInternals.raw} />
