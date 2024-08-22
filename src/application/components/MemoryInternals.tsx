@@ -25,6 +25,8 @@ import {
   Area,
   AreaChart,
   CartesianGrid,
+  Line,
+  LineChart,
   ReferenceLine,
   ResponsiveContainer,
   XAxis,
@@ -32,6 +34,7 @@ import {
 } from "recharts";
 import { colors } from "@apollo/brand";
 import { StatusBadge } from "./StatusBadge";
+import { useInterval } from "../hooks/useInterval";
 
 interface MemoryInternalsProps {
   clientId: string | undefined;
@@ -141,15 +144,26 @@ type InternalCache =
   | "inMemoryCache.executeSubSelectedArray"
   | "inMemoryCache.maybeBroadcastWatch";
 
-// const SAMPLE_RATE_MS = 5000;
-// const samples: Array<{ timestamp: Date; caches: Caches }> = [];
+const SAMPLE_RATE_MS = 1000;
+
+interface Sample {
+  timestamp: number;
+  caches: Caches;
+}
 
 const cacheComponents: Record<
   InternalCache,
-  { render: (caches: Caches) => JSX.Element; description?: ReactElement }
+  { render: (samples: Sample[]) => JSX.Element; description?: ReactElement }
 > = {
   print: {
-    render: (caches) => <CacheSize cacheSize={caches.print} />,
+    render: (samples) => (
+      <CacheSize
+        samples={samples.map((sample) => ({
+          timestamp: sample.timestamp,
+          cacheSize: sample.caches.print,
+        }))}
+      />
+    ),
     description: (
       <>
         <p>
@@ -175,10 +189,10 @@ const cacheComponents: Record<
     ),
   },
   parser: {
-    render: (caches) => <CacheSize cacheSize={caches.parser} />,
+    render: () => <TODOCacheSize />,
   },
   canonicalStringify: {
-    render: (caches) => <CacheSize cacheSize={caches.canonicalStringify} />,
+    render: () => <TODOCacheSize />,
   },
   links: { render: () => <TODOCacheSize /> },
   ["queryManager.getDocumentInfo"]: {
@@ -217,6 +231,7 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
   const [selectedCache, setSelectedCache] = useState<InternalCache>("print");
   const [selectedView, setSelectedView] = useState<"raw" | "chart">("chart");
   const selectedCacheComponent = cacheComponents[selectedCache];
+  const [samples, setSamples] = useState<Sample[]>([]);
 
   const { data, networkStatus, error } = useQuery(MEMORY_INTERNALS_QUERY, {
     variables: { clientId: clientId as string },
@@ -230,6 +245,12 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
 
   const memoryInternals = data?.client?.memoryInternals;
   const caches = memoryInternals?.caches;
+
+  useInterval(() => {
+    if (caches) {
+      setSamples((prev) => [...prev, { timestamp: Date.now(), caches }]);
+    }
+  }, SAMPLE_RATE_MS);
 
   if (networkStatus === NetworkStatus.loading) {
     return (
@@ -338,7 +359,7 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
                 </Button>
               </div>
             </div>
-            {selectedCacheComponent.render(caches)}
+            {selectedCacheComponent.render(samples)}
           </>
         ) : selectedView === "raw" ? (
           <JSONTreeViewer hideRoot data={memoryInternals.raw} />
@@ -385,25 +406,34 @@ function EmptyLayout({ children }: { children: ReactNode }) {
   );
 }
 
-function CacheSize({ cacheSize }: { cacheSize: CacheSize | null }) {
-  if (!cacheSize) {
-    return <p className="text-secondary">No cache found</p>;
+function CacheSize({
+  samples,
+}: {
+  samples: Array<{ timestamp: number; cacheSize: CacheSize | null }>;
+}) {
+  const baseTimestamp = samples[0]?.timestamp ?? 0;
+  const limit = samples[0]?.cacheSize?.limit ?? 0;
+
+  // Don't redraw every second but instead wait until we have the next batch of
+  // samples.
+  const throttledLength = Math.floor(samples.length / 5) * 5;
+
+  if (samples.length < 10) {
+    return (
+      <div className="text-xl size-full flex items-center justify-center">
+        Gathering data...
+      </div>
+    );
   }
 
   return (
     <ResponsiveContainer height="100%" width="100%">
-      <AreaChart
-        data={[
-          { name: "4:45", value: 100 },
-          { name: "4:46", value: 200 },
-          { name: "4:47", value: 100 },
-          { name: "4:48", value: 400 },
-          { name: "4:49", value: 500 },
-          { name: "4:50", value: 700 },
-          { name: "4:51", value: 200 },
-          { name: "4:52", value: 100 },
-          { name: "4:53", value: 50 },
-        ]}
+      <LineChart
+        data={samples.slice(0, throttledLength).map((sample) => ({
+          ms: sample.timestamp - baseTimestamp,
+          size: sample.cacheSize?.size,
+          limit: sample.cacheSize?.limit,
+        }))}
       >
         <defs>
           <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
@@ -420,29 +450,28 @@ function CacheSize({ cacheSize }: { cacheSize: CacheSize | null }) {
           </linearGradient>
         </defs>
         <XAxis
-          dataKey="name"
+          dataKey="ms"
           stroke={colors.tokens.border.primary.dark}
-          label={{ fill: colors.tokens.text.primary.dark }}
+          label="Time (ms)"
         />
-        <YAxis stroke={colors.tokens.border.primary.dark} />
+        <YAxis stroke={colors.tokens.border.primary.dark} min={100} />
         <CartesianGrid
           stroke={colors.tokens.border.primary.dark}
           strokeDasharray="3 3"
         />
-        <Area
+        <Line
           type="monotone"
-          dataKey="value"
+          dataKey="size"
           stroke={colors.tokens.border.info.dark}
-          fillOpacity={1}
-          fill="url(#colorValue)"
         />
-        <ReferenceLine
-          y={600}
-          label="Limit"
-          stroke={colors.tokens.border.error.dark}
-          strokeDasharray="3 3"
-        />
-      </AreaChart>
+        {limit > 0 && (
+          <ReferenceLine
+            y={limit}
+            strokeDashoffset="3 3"
+            stroke={colors.tokens.border.error.dark}
+          />
+        )}
+      </LineChart>
     </ResponsiveContainer>
   );
 }
