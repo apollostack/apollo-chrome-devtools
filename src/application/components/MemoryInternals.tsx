@@ -22,8 +22,6 @@ import { Button } from "./Button";
 import { Tooltip } from "./Tooltip";
 import { JSONTreeViewer } from "./JSONTreeViewer";
 import {
-  Area,
-  AreaChart,
   CartesianGrid,
   Line,
   LineChart,
@@ -31,6 +29,7 @@ import {
   ResponsiveContainer,
   XAxis,
   YAxis,
+  Tooltip as ChartTooltip,
 } from "recharts";
 import { colors } from "@apollo/brand";
 import { StatusBadge } from "./StatusBadge";
@@ -190,10 +189,24 @@ const cacheComponents: Record<
     ),
   },
   parser: {
-    render: () => <TODOCacheSize />,
+    render: (samples) => (
+      <CacheSize
+        samples={samples.map((sample) => ({
+          timestamp: sample.timestamp,
+          cacheSize: sample.caches.parser,
+        }))}
+      />
+    ),
   },
   canonicalStringify: {
-    render: () => <TODOCacheSize />,
+    render: (samples) => (
+      <CacheSize
+        samples={samples.map((sample) => ({
+          timestamp: sample.timestamp,
+          cacheSize: sample.caches.canonicalStringify,
+        }))}
+      />
+    ),
   },
   links: { render: () => <TODOCacheSize /> },
   ["queryManager.getDocumentInfo"]: {
@@ -218,13 +231,34 @@ const cacheComponents: Record<
     render: () => <TODOCacheSize />,
   },
   ["inMemoryCache.executeSelectionSet"]: {
-    render: () => <TODOCacheSize />,
+    render: (samples) => (
+      <CacheSize
+        samples={samples.map((sample) => ({
+          timestamp: sample.timestamp,
+          cacheSize: sample.caches.inMemoryCache.executeSelectionSet,
+        }))}
+      />
+    ),
   },
   ["inMemoryCache.executeSubSelectedArray"]: {
-    render: () => <TODOCacheSize />,
+    render: (samples) => (
+      <CacheSize
+        samples={samples.map((sample) => ({
+          timestamp: sample.timestamp,
+          cacheSize: sample.caches.inMemoryCache.executeSubSelectedArray,
+        }))}
+      />
+    ),
   },
   ["inMemoryCache.maybeBroadcastWatch"]: {
-    render: () => <TODOCacheSize />,
+    render: (samples) => (
+      <CacheSize
+        samples={samples.map((sample) => ({
+          timestamp: sample.timestamp,
+          cacheSize: sample.caches.inMemoryCache.maybeBroadcastWatch,
+        }))}
+      />
+    ),
   },
 };
 
@@ -431,7 +465,7 @@ function CacheSize({
     <ResponsiveContainer height="100%" width="100%">
       <LineChart
         data={samples.slice(0, throttledLength).map((sample) => ({
-          ms: sample.timestamp - baseTimestamp,
+          timestamp: Math.floor((sample.timestamp - baseTimestamp) / 60),
           size: sample.cacheSize?.size,
           limit: sample.cacheSize?.limit,
         }))}
@@ -451,11 +485,15 @@ function CacheSize({
           </linearGradient>
         </defs>
         <XAxis
-          dataKey="ms"
+          dataKey="timestamp"
           stroke={colors.tokens.border.primary.dark}
-          label="Time (ms)"
+          label="Time (s)"
         />
-        <YAxis stroke={colors.tokens.border.primary.dark} min={100} />
+        <YAxis
+          stroke={colors.tokens.border.primary.dark}
+          min={100}
+          domain={([, max]) => [0, Math.max(max, 100)]}
+        />
         <CartesianGrid
           stroke={colors.tokens.border.primary.dark}
           strokeDasharray="3 3"
@@ -465,6 +503,7 @@ function CacheSize({
           dataKey="size"
           stroke={colors.tokens.border.info.dark}
         />
+        <ChartTooltip />
         {limit > 0 && (
           <ReferenceLine
             y={limit}
