@@ -23,13 +23,13 @@ import { Tooltip } from "./Tooltip";
 import { JSONTreeViewer } from "./JSONTreeViewer";
 import {
   CartesianGrid,
-  Line,
-  LineChart,
   ReferenceLine,
   ResponsiveContainer,
   XAxis,
   YAxis,
   Tooltip as ChartTooltip,
+  AreaChart,
+  Area,
 } from "recharts";
 import { colors } from "@apollo/brand";
 import { StatusBadge } from "./StatusBadge";
@@ -463,7 +463,7 @@ function CacheSize({
 
   return (
     <ResponsiveContainer height="100%" width="100%">
-      <LineChart
+      <AreaChart
         data={samples.slice(0, throttledLength).map((sample) => ({
           timestamp: Math.floor((sample.timestamp - baseTimestamp) / 60),
           size: sample.cacheSize?.size,
@@ -492,26 +492,29 @@ function CacheSize({
         <YAxis
           stroke={colors.tokens.border.primary.dark}
           min={100}
-          domain={([, max]) => [0, Math.max(max, 100)]}
+          domain={([, dataMax]) => [0, Math.max(dataMax, 100, limit)]}
         />
         <CartesianGrid
           stroke={colors.tokens.border.primary.dark}
           strokeDasharray="3 3"
         />
-        <Line
+        <Area
           type="monotone"
           dataKey="size"
           stroke={colors.tokens.border.info.dark}
+          fillOpacity={1}
+          fill="url(#colorValue)"
         />
         <ChartTooltip />
         {limit > 0 && (
           <ReferenceLine
             y={limit}
+            label="Limit"
             strokeDashoffset="3 3"
             stroke={colors.tokens.border.error.dark}
           />
         )}
-      </LineChart>
+      </AreaChart>
     </ResponsiveContainer>
   );
 }
