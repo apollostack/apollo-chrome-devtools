@@ -5,6 +5,7 @@ import IconOutlinkSm from "@apollo/icons/small/IconOutlink.svg";
 import IconOperations from "@apollo/icons/default/IconOperations.svg";
 import IconObserve from "@apollo/icons/default/IconObserve.svg";
 import IconInfo from "@apollo/icons/default/IconInfo.svg";
+import IconPause from "@apollo/icons/default/IconPause.svg";
 
 import { FullWidthLayout } from "./Layouts/FullWidthLayout";
 import { PageSpinner } from "./PageSpinner";
@@ -30,6 +31,7 @@ import {
   YAxis,
 } from "recharts";
 import { colors } from "@apollo/brand";
+import { StatusBadge } from "./StatusBadge";
 
 interface MemoryInternalsProps {
   clientId: string | undefined;
@@ -292,34 +294,49 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
           </Tooltip>
         </ButtonGroup>
       </div>
-      <FullWidthLayout.Main className="flex flex-col gap-4 overflow-auto items-start">
+      <FullWidthLayout.Main className="flex flex-col gap-4 overflow-auto">
         {selectedView === "chart" ? (
           <>
-            <div className="flex items-center gap-2">
-              <Select
-                defaultValue="print"
-                value={selectedCache}
-                onValueChange={(value) =>
-                  setSelectedCache(value as InternalCache)
-                }
-              >
-                {Object.keys(cacheComponents).map((key) => (
-                  <SelectOption label={key} key={key} />
-                ))}
-              </Select>
-              {selectedCacheComponent.description && (
-                <Tooltip
-                  content={
-                    <div className="flex flex-col gap-2">
-                      {selectedCacheComponent.description}
-                    </div>
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <Select
+                  defaultValue="print"
+                  value={selectedCache}
+                  onValueChange={(value) =>
+                    setSelectedCache(value as InternalCache)
                   }
                 >
-                  <span>
-                    <IconInfo className="text-icon-primary dark:text-icon-primary-dark size-4" />
-                  </span>
-                </Tooltip>
-              )}
+                  {Object.keys(cacheComponents).map((key) => (
+                    <SelectOption label={key} key={key} />
+                  ))}
+                </Select>
+                {selectedCacheComponent.description && (
+                  <Tooltip
+                    content={
+                      <div className="flex flex-col gap-2">
+                        {selectedCacheComponent.description}
+                      </div>
+                    }
+                  >
+                    <span>
+                      <IconInfo className="text-icon-primary dark:text-icon-primary-dark size-4" />
+                    </span>
+                  </Tooltip>
+                )}
+              </div>
+              <div className="flex gap-6 items-center">
+                <StatusBadge color="red" variant="hidden">
+                  Recording
+                </StatusBadge>
+                <Button
+                  size="md"
+                  variant="secondary"
+                  icon={<IconPause />}
+                  className="focus:ring-0"
+                >
+                  Pause
+                </Button>
+              </div>
             </div>
             {selectedCacheComponent.render(caches)}
           </>
