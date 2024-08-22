@@ -108,6 +108,10 @@ const MEMORY_INTERNALS_QUERY: TypedDocumentNode<
   }
 `;
 
+type Caches = NonNullable<
+  NonNullable<MemoryInternalsQuery["client"]>["memoryInternals"]
+>["caches"];
+
 type InternalCache =
   | "print"
   | "parser"
@@ -125,22 +129,7 @@ type InternalCache =
   | "inMemoryCache.maybeBroadcastWatch";
 
 const SAMPLE_RATE_MS = 5000;
-
-const samples: Partial<
-  Record<InternalCache, Array<{ value: number; time: Date }>>
-> = {
-  print: [],
-  parser: [],
-  canonicalStringify: [],
-};
-
-type Caches = NonNullable<
-  NonNullable<MemoryInternalsQuery["client"]>["memoryInternals"]
->["caches"];
-
-const sample = throttle((caches: Caches) => {
-  samples.print?.push({ value: caches.print?.size ?? 0, time: new Date() });
-}, SAMPLE_RATE_MS);
+const samples: Array<{ timestamp: Date; caches: Caches }> = [];
 
 const cacheComponents: Record<
   InternalCache,
@@ -221,12 +210,6 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
 
   const memoryInternals = data?.client?.memoryInternals;
   const caches = memoryInternals?.caches;
-
-  useEffect(() => {
-    if (caches) {
-      sample(caches);
-    }
-  }, [caches]);
 
   if (networkStatus === NetworkStatus.loading) {
     return (
