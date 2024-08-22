@@ -35,6 +35,7 @@ import {
 import { colors } from "@apollo/brand";
 import { StatusBadge } from "./StatusBadge";
 import { useInterval } from "../hooks/useInterval";
+import { Spinner } from "./Spinner";
 
 interface MemoryInternalsProps {
   clientId: string | undefined;
@@ -418,10 +419,10 @@ function CacheSize({
   // samples.
   const throttledLength = Math.floor(samples.length / 5) * 5;
 
-  if (samples.length < 10) {
+  if (samples.length < 5) {
     return (
       <div className="text-xl size-full flex items-center justify-center">
-        Gathering data...
+        <Spinner size="sm" className="mr-2" /> Gathering samples
       </div>
     );
   }
