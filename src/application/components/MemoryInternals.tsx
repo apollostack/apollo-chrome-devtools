@@ -467,7 +467,7 @@ function CacheSize({
         data={samples.slice(0, throttledLength).map((sample) => ({
           timestamp: Math.floor((sample.timestamp - baseTimestamp) / 60),
           size: sample.cacheSize?.size,
-          limit: sample.cacheSize?.limit,
+          limit,
         }))}
       >
         <defs>
