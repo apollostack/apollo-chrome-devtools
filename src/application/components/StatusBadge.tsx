@@ -5,7 +5,7 @@ import { cva } from "class-variance-authority";
 import type { OmitNull } from "../types/utils";
 import { twMerge } from "tailwind-merge";
 
-interface StatusBadgeProps extends IconVariants, ContainerVariants {
+export interface StatusBadgeProps extends IconVariants, ContainerVariants {
   icon?: ReactElement<{ className: string }>;
   className?: string;
   children?: ReactNode;

@@ -5,6 +5,7 @@ import userEvent from "@testing-library/user-event";
 import * as Tooltip from "@radix-ui/react-tooltip";
 
 import { client } from "../../index";
+import { MemoryRouter } from "react-router-dom";
 
 export const renderWithApolloClient = (
   ui: ReactElement,
@@ -13,7 +14,7 @@ export const renderWithApolloClient = (
   const utils = render(
     <Tooltip.Provider>
       <ApolloProvider client={client} {...providerProps}>
-        {ui}
+        <MemoryRouter>{ui}</MemoryRouter>
       </ApolloProvider>
     </Tooltip.Provider>,
     renderOptions

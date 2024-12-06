@@ -6,7 +6,11 @@ import * as manifest from "../chrome/manifest.json";
 const { version: devtoolsVersion } = manifest;
 import type { MutationDetails, QueryDetails } from "./helpers";
 import { getQueries, getQueriesLegacy, getMutations } from "./helpers";
-import type { ApolloClientInfo, SafeAny } from "../../types";
+import type {
+  ApolloClientInfo,
+  ConnectorsDebuggingResultPayload,
+  SafeAny,
+} from "../../types";
 import { getPrivateAccess } from "../../privateAccess";
 import type { JSONObject } from "../../application/types/json";
 import { createWindowActor } from "../actor";
@@ -130,6 +134,26 @@ handleRpc("getMutations", (clientId) =>
 handleRpc("getCache", (clientId) => {
   return getClientById(clientId)?.cache.extract(true) ?? {};
 });
+
+// Temporarily hold all connectors requests until the devtools connects and asks
+// for them. After these are requests, we clear this array since we no longer
+// need to hold onto the requests here.
+let connectorsRequests: ConnectorsDebuggingResultPayload[] = [];
+handleRpc("getConnectorsRequests", () => {
+  try {
+    return connectorsRequests;
+  } finally {
+    disconnectFromDebuggingResults();
+    connectorsRequests = [];
+  }
+});
+
+const disconnectFromDebuggingResults = tab.on(
+  "connectorsDebuggingResult",
+  ({ payload }) => {
+    connectorsRequests.push(payload);
+  }
+);
 
 function getClientById(clientId: string) {
   const [client] =

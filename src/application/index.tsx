@@ -6,12 +6,16 @@ import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import { SchemaLink } from "@apollo/client/link/schema";
 
 import { colorTheme, listenForThemeChange } from "./theme";
-import { App } from "./App";
 import { fragmentRegistry } from "./fragmentRegistry";
 import * as Tooltip from "@radix-ui/react-tooltip";
 
 import { getRpcClient } from "../extension/devtools/panelRpcClient";
 import { createSchemaWithRpcClient } from "./schema";
+import { RouterProvider } from "react-router-dom";
+import { router } from "./router";
+import { getPanelActor } from "../extension/devtools/panelActor";
+import { connectorsRequestsVar } from "./vars";
+import type { ConnectorsDebuggingResultPayload } from "../types";
 
 loadDevMessages();
 loadErrorMessages();
@@ -87,7 +91,7 @@ export const AppProvider = () => {
   return (
     <Tooltip.Provider delayDuration={0}>
       <ApolloProvider client={client}>
-        <App />
+        <RouterProvider router={router} />
       </ApolloProvider>
     </Tooltip.Provider>
   );
@@ -96,5 +100,42 @@ export const AppProvider = () => {
 export const initDevTools = () => {
   const root = createRoot(document.getElementById("devtools") as HTMLElement);
 
+  rpcClient
+    .withTimeout(3000)
+    .request("getConnectorsRequests")
+    .then((results) => {
+      connectorsRequestsVar(results.map(assignConnectorsIds));
+    })
+    .catch(() => {
+      // Ignore errors
+    });
+
   root.render(<AppProvider />);
 };
+
+let nextPayloadId = 0;
+const actor = getPanelActor(window);
+
+actor.on("connectorsDebuggingResult", ({ payload }) => {
+  connectorsRequestsVar([
+    ...connectorsRequestsVar(),
+    assignConnectorsIds(payload),
+  ]);
+});
+
+actor.on("pageNavigated", () => connectorsRequestsVar([]));
+actor.on("clientTerminated", () => connectorsRequestsVar([]));
+
+function assignConnectorsIds(result: ConnectorsDebuggingResultPayload) {
+  return {
+    ...result,
+    id: ++nextPayloadId,
+    debuggingResult: {
+      ...result.debuggingResult,
+      data: result.debuggingResult.data.map((data, idx) => ({
+        ...data,
+        id: idx + 1,
+      })),
+    },
+  };
+}

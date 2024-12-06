@@ -24,6 +24,10 @@ import { SearchField } from "../SearchField";
 import HighlightMatch from "../HighlightMatch";
 import { PageSpinner } from "../PageSpinner";
 import { isIgnoredError } from "../../utilities/ignoredErrors";
+import { useMatchingConnectors } from "../../hooks/useMatchingConnectors";
+import { Heading } from "../Heading";
+import { ConnectorsTable } from "../ConnectorsTable";
+import { ExternalLink } from "../ExternalLink";
 
 const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
   gql`
@@ -101,6 +105,11 @@ export const Mutations = ({ clientId, explorerIFrame }: MutationsProps) => {
 
     return mutations.filter(({ name }) => name && regex.test(name));
   }, [searchTerm, mutations]);
+
+  const lastConnectorsRequest = useMatchingConnectors({
+    query: selectedMutation?.mutationString,
+    variables: selectedMutation?.variables,
+  }).at(-1);
 
   return (
     <SidebarLayout>
@@ -199,6 +208,7 @@ export const Mutations = ({ clientId, explorerIFrame }: MutationsProps) => {
           <QueryLayout.Tabs defaultValue="variables">
             <Tabs.List>
               <Tabs.Trigger value="variables">Variables</Tabs.Trigger>
+              <Tabs.Trigger value="connectors">Connectors</Tabs.Trigger>
               <CopyButton
                 text={JSON.stringify(selectedMutation?.variables ?? {})}
                 size="sm"
@@ -211,6 +221,31 @@ export const Mutations = ({ clientId, explorerIFrame }: MutationsProps) => {
                 className="[&>li]:!pt-0"
                 data={selectedMutation?.variables ?? {}}
               />
+            </QueryLayout.TabContent>
+            <QueryLayout.TabContent value="connectors">
+              <Heading as="h2" className="mb-4">
+                Requests
+              </Heading>
+              {lastConnectorsRequest ? (
+                <ConnectorsTable
+                  size="condensed"
+                  data={lastConnectorsRequest.debuggingResult.data}
+                  resultId={lastConnectorsRequest.id}
+                  columns={["method", "status", "url"]}
+                />
+              ) : (
+                <p className="text-placeholder dark:text-placeholder-dark text-sm">
+                  No connectors requests for this mutation. Learn more about
+                  Apollo connectors in the{" "}
+                  <ExternalLink
+                    href="https://www.apollographql.com/docs/graphos/schema-design/connectors"
+                    size="sm"
+                  >
+                    docs
+                  </ExternalLink>
+                  .
+                </p>
+              )}
             </QueryLayout.TabContent>
           </QueryLayout.Tabs>
         </QueryLayout>

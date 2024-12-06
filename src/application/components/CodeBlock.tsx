@@ -144,7 +144,7 @@ export const CodeBlock = ({
     <div
       className={clsx(
         className,
-        "flex gap-1 items-start bg-secondary dark:bg-secondary-dark p-4 rounded-lg relative border border-primary dark:border-primary-dark overflow-auto text-sm"
+        "flex gap-1 items-start bg-secondary dark:bg-secondary-dark p-4 rounded-lg relative border border-primary dark:border-primary-dark overflow-auto text-sm [container-name:code-block] [container-type:inline-size]"
       )}
     >
       <Highlight language={language} theme={activeTheme} code={code}>
@@ -175,7 +175,9 @@ export const CodeBlock = ({
         <CopyToClipboard text={code}>
           <Button size="sm" variant="hidden" className="sticky top-0">
             <IconCopy className="w-4" />
-            Copy
+            <span className="hidden [@container_code-block_(min-width:400px)]:inline">
+              Copy
+            </span>
           </Button>
         </CopyToClipboard>
       )}

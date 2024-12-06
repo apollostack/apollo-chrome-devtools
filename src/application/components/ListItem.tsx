@@ -18,7 +18,6 @@ export function ListItem({
     <li
       tabIndex={0}
       className={twMerge(
-        className,
         "text-sm text-primary dark:text-primary-dark",
         "transition-colors duration-200",
         "border-2 border-transparent flex items-center rounded-md cursor-pointer py-2 px-4",
@@ -26,7 +25,8 @@ export function ListItem({
         "focus-visible:border-focused focus-visible:dark:border-focused-dark",
         selected
           ? "font-semibold bg-neutral dark:bg-neutral-dark"
-          : "hover:bg-button-secondaryHover hover:dark:bg-button-secondaryHover-dark"
+          : "hover:bg-button-secondaryHover hover:dark:bg-button-secondaryHover-dark",
+        className
       )}
       onClick={onClick}
       onKeyDown={(e) => {

@@ -16,7 +16,7 @@ export function Tabs<TValue extends string = string>({
 }: TabsProps<TValue>) {
   return (
     <TabsBase
-      className="[grid-area:tabs] lg:overflow-hidden lg:-my-2"
+      className="[grid-area:tabs] lg:overflow-hidden lg:-my-2 xl:border-l xl:border-l-primary xl:dark:border-l-primary-dark xl:pl-6 xl:-my-4 xl:py-2"
       defaultValue={defaultValue}
       value={value}
       onChange={onChange}

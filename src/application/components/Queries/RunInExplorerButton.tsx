@@ -3,9 +3,9 @@ import {
   postMessageToEmbed,
   SET_OPERATION,
 } from "../Explorer/postMessageHelpers";
-import { currentScreen, Screens } from "../Layouts/Navigation";
 import IconRun from "@apollo/icons/default/IconRun.svg";
 import { Button } from "../Button";
+import { useNavigate } from "react-router-dom";
 
 interface RunInExplorerButtonProps {
   operation: string;
@@ -18,6 +18,8 @@ export const RunInExplorerButton = ({
   variables,
   embeddedExplorerIFrame,
 }: RunInExplorerButtonProps): JSX.Element | null => {
+  const navigate = useNavigate();
+
   return (
     <Button
       variant="secondary"
@@ -36,7 +38,7 @@ export const RunInExplorerButton = ({
             },
             embeddedExplorerIFrame,
           });
-          currentScreen(Screens.Explorer);
+          navigate("/explorer");
         }
       }}
     >

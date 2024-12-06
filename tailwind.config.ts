@@ -38,6 +38,7 @@ export default {
         },
       },
       boxShadow: {
+        cards: "0px 1px 3px 0px rgba(0, 0, 0, 0.06)",
         dropdown:
           "0 4px 8px 0 rgba(0, 0, 0, 0.08), 0 0 0 0 rgba(18, 21, 26, 0.04)",
         modal:

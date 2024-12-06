@@ -1,4 +1,5 @@
 import type { ApolloQueryResult } from "@apollo/client";
+import type { JSONObject } from "./application/types/json";
 
 export type QueryResult = ApolloQueryResult<any>;
 
@@ -25,4 +26,75 @@ export interface ApolloClientInfo {
   version: string;
   queryCount: number;
   mutationCount: number;
+}
+
+export interface ConnectorsDebuggingResultPayload {
+  operationName: string | null;
+  variables: Record<string, unknown> | null;
+  query: string;
+  debuggingResult: ConnectorsDebuggingResult;
+}
+
+export interface ConnectorsDebuggingResultPayloadWithId
+  extends ConnectorsDebuggingResultPayload {
+  id: number;
+  debuggingResult: ConnectorsDebuggingResultWithId;
+}
+
+export interface ConnectorsDebuggingResult {
+  version: string;
+  data: ConnectorsDebuggingData[];
+}
+
+export interface ConnectorsDebuggingResultWithId {
+  version: string;
+  data: ConnectorsDebuggingDataWithId[];
+}
+
+export interface ConnectorsDebuggingRequest {
+  url: string;
+  method: string;
+  headers: [string, string][];
+  body: ConnectorsDebuggingBody | null;
+}
+
+interface SelectionError {
+  message: string;
+  path: string;
+  count: number;
+}
+
+export interface ConnectorsDebuggingBody {
+  kind: string;
+  content: Content;
+}
+
+export type Content = string | JSONObject | JSONObject[] | null | undefined;
+
+export interface SelectionMappingResponse {
+  source: string;
+  transformed: string;
+  result: JSONObject | JSONObject[] | null;
+  errors: SelectionError[];
+}
+
+export interface ConnectorsDebuggingResponse {
+  status: number;
+  headers: [string, string][];
+  body: ConnectorsDebuggingBody & {
+    selection: SelectionMappingResponse;
+  };
+}
+export interface ConnectorsDebuggingData {
+  request: ConnectorsDebuggingRequest | null | undefined;
+  response: ConnectorsDebuggingResponse | null | undefined;
+}
+
+export interface ConnectorsDebuggingDataWithId extends ConnectorsDebuggingData {
+  id: number;
+}
+
+export interface ConnectorsDebuggingResult {
+  version: string;
+  data: ConnectorsDebuggingData[];
 }

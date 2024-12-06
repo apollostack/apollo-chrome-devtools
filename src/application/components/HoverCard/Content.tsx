@@ -14,7 +14,7 @@ export function Content({ className, children }: ContentProps) {
         collisionPadding={20}
         sideOffset={2}
         className={twMerge(
-          "bg-primary dark:bg-primary-dark border border-primary dark:border-primary-dark rounded-lg px-4 py-3 shadow-popovers text-sm max-w-md overflow-auto max-h-[var(--radix-popper-available-height)] isolate",
+          "bg-primary dark:bg-primary-dark border border-primary dark:border-primary-dark rounded-lg px-4 py-3 shadow-popovers text-sm max-w-md overflow-auto max-h-[var(--radix-popper-available-height)] isolate z-50",
           className
         )}
       >

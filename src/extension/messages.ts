@@ -19,6 +19,7 @@ export function isDevtoolsMessage(
     typeof message === "object" &&
     message !== null &&
     "source" in message &&
-    message.source === "apollo-client-devtools"
+    (message.source === "apollo-client-devtools" ||
+      message.source === "apollo-client")
   );
 }

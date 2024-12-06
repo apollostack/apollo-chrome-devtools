@@ -2,7 +2,11 @@ import { MessageType, isDevtoolsMessage } from "./messages";
 import type { MessageAdapter } from "./messageAdapters";
 import { createWindowMessageAdapter } from "./messageAdapters";
 import { createId } from "../utils/createId";
-import type { ApolloClientInfo, ExplorerResponse } from "../types";
+import type {
+  ApolloClientInfo,
+  ConnectorsDebuggingResultPayload,
+  ExplorerResponse,
+} from "../types";
 import type { DocumentNode, FetchPolicy } from "@apollo/client";
 import type { JSONObject } from "../application/types/json";
 
@@ -24,7 +28,11 @@ export type ActorMessage =
   | { type: "pageNavigated" }
   | { type: "initializePanel" }
   | { type: "panelHidden" }
-  | { type: "panelShown" };
+  | { type: "panelShown" }
+  | {
+      type: "connectorsDebuggingResult";
+      payload: ConnectorsDebuggingResultPayload;
+    };
 
 export type ApolloClientDevtoolsActorMessage = {
   id: string;

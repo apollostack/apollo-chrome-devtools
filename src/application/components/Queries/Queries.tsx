@@ -26,11 +26,16 @@ import { SearchField } from "../SearchField";
 import HighlightMatch from "../HighlightMatch";
 import { PageSpinner } from "../PageSpinner";
 import { isIgnoredError } from "../../utilities/ignoredErrors";
+import { Heading } from "../Heading";
+import { ExternalLink } from "../ExternalLink";
+import { useMatchingConnectors } from "../../hooks/useMatchingConnectors";
+import { ConnectorsTable } from "../ConnectorsTable";
 
 enum QueryTabs {
   Variables = "Variables",
   CachedData = "CachedData",
   Options = "Options",
+  Connectors = "Connectors",
 }
 
 export const GET_QUERIES: TypedDocumentNode<GetQueries, GetQueriesVariables> =
@@ -112,6 +117,11 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
 
     return queries.filter((query) => query.name && regex.test(query.name));
   }, [searchTerm, queries]);
+
+  const lastConnectorsRequest = useMatchingConnectors({
+    query: selectedQuery?.queryString,
+    variables: selectedQuery?.variables,
+  }).at(-1);
 
   return (
     <SidebarLayout>
@@ -227,11 +237,16 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
                 Cached Data
               </Tabs.Trigger>
               <Tabs.Trigger value={QueryTabs.Options}>Options</Tabs.Trigger>
-              <CopyButton
-                className="ml-auto relative right-[6px]"
-                size="sm"
-                text={copyButtonText}
-              />
+              <Tabs.Trigger value={QueryTabs.Connectors}>
+                Connectors
+              </Tabs.Trigger>
+              {currentTab !== QueryTabs.Connectors && (
+                <CopyButton
+                  className="ml-auto relative right-[6px]"
+                  size="sm"
+                  text={copyButtonText}
+                />
+              )}
             </Tabs.List>
             <QueryLayout.TabContent value={QueryTabs.Variables}>
               <JSONTreeViewer
@@ -253,6 +268,31 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
                 className="[&>li]:!pt-0"
                 data={selectedQuery?.options ?? {}}
               />
+            </QueryLayout.TabContent>
+            <QueryLayout.TabContent value={QueryTabs.Connectors}>
+              <Heading as="h2" className="mb-4">
+                Requests
+              </Heading>
+              {lastConnectorsRequest ? (
+                <ConnectorsTable
+                  size="condensed"
+                  data={lastConnectorsRequest.debuggingResult.data}
+                  resultId={lastConnectorsRequest.id}
+                  columns={["method", "status", "url"]}
+                />
+              ) : (
+                <p className="text-placeholder dark:text-placeholder-dark text-sm">
+                  No connectors requests for this query. Learn more about Apollo
+                  connectors in the{" "}
+                  <ExternalLink
+                    href="https://www.apollographql.com/docs/graphos/schema-design/connectors"
+                    size="sm"
+                  >
+                    docs
+                  </ExternalLink>
+                  .
+                </p>
+              )}
             </QueryLayout.TabContent>
           </QueryLayout.Tabs>
         </QueryLayout>

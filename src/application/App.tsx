@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
-import { useReactiveVar, gql, useQuery } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 import { useMachine } from "@xstate/react";
 import { ErrorBoundary } from "react-error-boundary";
 
-import { currentScreen, Screens } from "./components/Layouts/Navigation";
 import { Queries } from "./components/Queries/Queries";
 import { Mutations } from "./components/Mutations/Mutations";
 import { Explorer } from "./components/Explorer/Explorer";
@@ -41,6 +40,8 @@ import { useActorEvent } from "./hooks/useActorEvent";
 import { removeClient } from ".";
 import { PageError } from "./components/PageError";
 import { SidebarLayout } from "./components/Layouts/SidebarLayout";
+import { Outlet, useMatches, useNavigate } from "react-router-dom";
+import { PageSpinner } from "./components/PageSpinner";
 
 const APP_QUERY: TypedDocumentNode<AppQuery, AppQueryVariables> = gql`
   query AppQuery {
@@ -115,11 +116,12 @@ export const App = () => {
     send({ type: "disconnect" });
   });
 
+  const navigate = useNavigate();
+  const matches = useMatches();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [selectedClientId, setSelectedClientId] = useState<string | undefined>(
     data?.clients[0]?.id
   );
-  const selected = useReactiveVar<Screens>(currentScreen);
   const [embeddedExplorerIFrame, setEmbeddedExplorerIFrame] =
     useState<HTMLIFrameElement | null>(null);
 
@@ -153,6 +155,9 @@ export const App = () => {
     }
   }, [send, clients.length]);
 
+  // The 0 index is always the root route and the selected tab is index 1.
+  const tab = matches[1];
+
   return (
     <>
       <SettingsModal open={settingsOpen} onOpen={setSettingsOpen} />
@@ -163,8 +168,8 @@ export const App = () => {
       />
       <BannerAlert />
       <Tabs
-        value={selected}
-        onChange={(screen) => currentScreen(screen)}
+        value={tab?.pathname ?? "/queries"}
+        onChange={navigate}
         className="flex flex-col h-screen bg-primary dark:bg-primary-dark"
       >
         <div className="flex items-center border-b border-b-primary dark:border-b-primary-dark gap-4 px-4">
@@ -185,14 +190,15 @@ export const App = () => {
           </a>
           <Divider orientation="vertical" />
           <Tabs.List className="-mb-px">
-            <Tabs.Trigger value={Screens.Queries}>
+            <Tabs.Trigger value="/queries">
               Queries ({client?.queries.total ?? 0})
             </Tabs.Trigger>
-            <Tabs.Trigger value={Screens.Mutations}>
+            <Tabs.Trigger value="/mutations">
               Mutations ({client?.mutations.total ?? 0})
             </Tabs.Trigger>
-            <Tabs.Trigger value={Screens.Cache}>Cache</Tabs.Trigger>
-            <Tabs.Trigger value={Screens.Explorer}>Explorer</Tabs.Trigger>
+            <Tabs.Trigger value="/cache">Cache</Tabs.Trigger>
+            <Tabs.Trigger value="/connectors">Connectors</Tabs.Trigger>
+            <Tabs.Trigger value="/explorer">Explorer</Tabs.Trigger>
           </Tabs.List>
           <div className="ml-auto flex-1 justify-end flex items-center gap-2 h-full">
             {client?.version && (
@@ -260,22 +266,19 @@ export const App = () => {
          */}
         <Tabs.Content
           className="flex flex-col flex-1"
-          value={Screens.Explorer}
+          value="/explorer"
           forceMount
         >
           <Explorer
             clientId={selectedClientId}
-            isVisible={selected === Screens.Explorer}
+            isVisible={tab?.pathname === "/explorer"}
             embeddedExplorerProps={{
               embeddedExplorerIFrame,
               setEmbeddedExplorerIFrame,
             }}
           />
         </Tabs.Content>
-        <Tabs.Content
-          className="flex-1 overflow-hidden"
-          value={Screens.Queries}
-        >
+        <Tabs.Content className="flex-1 overflow-hidden" value="/queries">
           <TabErrorBoundary remarks="Error on Queries tab:">
             <Queries
               clientId={selectedClientId}
@@ -283,10 +286,7 @@ export const App = () => {
             />
           </TabErrorBoundary>
         </Tabs.Content>
-        <Tabs.Content
-          className="flex-1 overflow-hidden"
-          value={Screens.Mutations}
-        >
+        <Tabs.Content className="flex-1 overflow-hidden" value="/mutations">
           <TabErrorBoundary remarks="Error on Mutations tab:">
             <Mutations
               clientId={selectedClientId}
@@ -294,7 +294,14 @@ export const App = () => {
             />
           </TabErrorBoundary>
         </Tabs.Content>
-        <Tabs.Content className="flex-1 overflow-hidden" value={Screens.Cache}>
+        <Tabs.Content className="flex-1 overflow-hidden" value="/connectors">
+          <TabErrorBoundary remarks="Error on Connectors tab:">
+            <Suspense fallback={<PageSpinner />}>
+              <Outlet />
+            </Suspense>
+          </TabErrorBoundary>
+        </Tabs.Content>
+        <Tabs.Content className="flex-1 overflow-hidden" value="/cache">
           <TabErrorBoundary remarks="Error on Cache tab:">
             <Cache clientId={selectedClientId} />
           </TabErrorBoundary>
