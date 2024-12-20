@@ -58,13 +58,25 @@ const DESCRIPTIONS: Record<keyof CacheSizes, ReactNode> = {
         </TooltipLink>
         .
       </p>
-
       <p>
         It is called with transformed <code>DocumentNode</code>s.
       </p>
     </>
   ),
-  "removeTypenameFromVariables.getVariableDefinitions": "",
+  "removeTypenameFromVariables.getVariableDefinitions": (
+    <>
+      <p>
+        Cache used in
+        <TooltipLink href="https://github.com/apollographql/apollo-client/blob/main/src/link/remove-typename/removeTypenameFromVariables.ts">
+          <code>removeTypenameFromVariables</code>
+        </TooltipLink>
+        .
+      </p>
+      <p>
+        This function is called transformed <code>DocumentNode</code>s.
+      </p>
+    </>
+  ),
   "queryManager.getDocumentInfo": (
     <>
       <p>
@@ -74,12 +86,56 @@ const DESCRIPTIONS: Record<keyof CacheSizes, ReactNode> = {
         </TooltipLink>
         .
       </p>
-      <p>It is called with transformed `DocumentNode`s.</p>
+      <p>
+        It is called with transformed <code>DocumentNode</code>s.
+      </p>
     </>
   ),
-  "documentTransform.cache": "",
-  "fragmentRegistry.lookup": "",
-  "fragmentRegistry.findFragmentSpreads": "",
+  "documentTransform.cache": (
+    <>
+      <p>
+        Cache size for the cache of
+        <TooltipLink href="https://github.com/apollographql/apollo-client/blob/main/src/utilities/graphql/DocumentTransform.ts">
+          <code>DocumentTransform</code>
+        </TooltipLink>{" "}
+        instances with the <code>cache</code> option set to <code>true</code>.
+      </p>
+      <p>
+        Can be called with user-defined or already-transformed{" "}
+        <code>DocumentNode</code>s.
+      </p>
+    </>
+  ),
+  "fragmentRegistry.lookup": (
+    <>
+      <p>
+        A cache inside of
+        <TooltipLink href="https://github.com/apollographql/apollo-client/blob/main/src/cache/inmemory/fragmentRegistry.ts">
+          <code>FragmentRegistry</code>
+        </TooltipLink>
+        .
+      </p>
+      <p>
+        This function is called with fragment names in the form of a string.
+      </p>
+    </>
+  ),
+  "fragmentRegistry.findFragmentSpreads": (
+    <>
+      <p>
+        Cache size for the <code>findFragmentSpreads</code> method of
+        <TooltipLink href="https://github.com/apollographql/apollo-client/blob/main/src/cache/inmemory/fragmentRegistry.ts">
+          <code>FragmentRegistry</code>
+        </TooltipLink>
+        .
+      </p>
+      <p>
+        This function is called with transformed <code>DocumentNode</code>s, as
+        well as recursively with every fragment spread referenced within that,
+        or a fragment referenced by a fragment spread.
+      </p>
+    </>
+  ),
   "fragmentRegistry.transform": (
     <>
       <p>
@@ -89,17 +145,73 @@ const DESCRIPTIONS: Record<keyof CacheSizes, ReactNode> = {
         </TooltipLink>
         .
       </p>
-
       <p>
         Can be called with user-defined or already-transformed{" "}
         <code>DocumentNode</code>s.
       </p>
     </>
   ),
-  "cache.fragmentQueryDocuments": "",
-  "inMemoryCache.executeSelectionSet": "",
-  "inMemoryCache.executeSubSelectedArray": "",
-  "inMemoryCache.maybeBroadcastWatch": "",
+  "cache.fragmentQueryDocuments": (
+    <>
+      <p>
+        Cache size for the <code>getFragmentDoc</code> method of
+        <TooltipLink href="https://github.com/apollographql/apollo-client/blob/main/src/cache/core/cache.ts">
+          <code>ApolloCache</code>
+        </TooltipLink>
+        .
+      </p>
+      <p>This function is called with user-provided fragment definitions.</p>
+    </>
+  ),
+  "inMemoryCache.executeSelectionSet": (
+    <>
+      <p>
+        Cache size for the <code>executeSelectionSet</code> method on{" "}
+        <TooltipLink href="https://github.com/apollographql/apollo-client/blob/main/src/cache/inmemory/readFromStore.ts">
+          <code>StoreReader</code>
+        </TooltipLink>
+        .
+      </p>
+      <p>
+        Note: <code>executeSelectionSet</code> will be set to the{" "}
+        <code>resultCacheMaxSize</code> option and will fall back to this
+        configuration value if the option is not set.
+      </p>
+    </>
+  ),
+  "inMemoryCache.executeSubSelectedArray": (
+    <>
+      <p>
+        Cache size for the <code>executeSubSelectedArray</code> method on{" "}
+        <TooltipLink href="https://github.com/apollographql/apollo-client/blob/main/src/cache/inmemory/readFromStore.ts">
+          <code>StoreReader</code>
+        </TooltipLink>
+        .
+      </p>
+
+      <p>
+        Note: <code>executeSubSelectedArray</code> will be set to the{" "}
+        <code>resultCacheMaxSize</code> option and will fall back to this
+        configuration value if the option is not set.
+      </p>
+    </>
+  ),
+  "inMemoryCache.maybeBroadcastWatch": (
+    <>
+      <p>
+        Cache size for the <code>maybeBroadcastWatch</code> method on{" "}
+        <TooltipLink href="https://github.com/apollographql/apollo-client/blob/main/src/cache/inmemory/inMemoryCache.ts">
+          <code>InMemoryCache</code>
+        </TooltipLink>
+        .
+      </p>
+      <p>
+        Note: <code>maybeBroadcastWatch</code> will be set to the{" "}
+        <code>resultCacheMaxSize</code> option and will fall back to this
+        configuration value if the option is not set.
+      </p>
+    </>
+  ),
 };
 
 export function CacheSize({ cacheSize }: { cacheSize: CacheSizeType }) {
