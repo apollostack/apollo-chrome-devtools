@@ -143,18 +143,16 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
           <PageError.Content>
             <PageError.Title>Memory management not available</PageError.Title>
             <PageError.Body>
-              <p>
-                Memory management is available in Apollo Client{" "}
-                <ExternalLink
-                  href="https://github.com/apollographql/apollo-client/releases/tag/v3.9.0"
-                  className="font-medium inline-flex items-center gap-2"
-                >
-                  3.9.0
-                  <IconOutlink className="size-4" />
-                </ExternalLink>{" "}
-                or greater. Please upgrade your Apollo Client version to use
-                this feature.
-              </p>
+              Memory management is available in Apollo Client{" "}
+              <ExternalLink
+                href="https://github.com/apollographql/apollo-client/releases/tag/v3.9.0"
+                className="font-medium inline-flex items-center gap-2"
+              >
+                3.9.0
+                <IconOutlink className="size-4" />
+              </ExternalLink>{" "}
+              or greater. Please upgrade your Apollo Client version to use this
+              feature.
             </PageError.Body>
           </PageError.Content>
         </PageError>
@@ -165,11 +163,16 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
   if (!caches) {
     return (
       <EmptyLayout>
-        <p className="text-secondary dark:text-secondary-dark">
-          Could not get memory internals for the client. This may be a result of
-          running your application in production mode. Access to memory
-          internals is disabled in production builds.
-        </p>
+        <PageError className="mt-8">
+          <PageError.Content>
+            <PageError.Title>Unable to get memory internals</PageError.Title>
+            <PageError.Body>
+              Could not get memory internals for the client. This could be a
+              result of running your application in production mode since access
+              to memory internals is only available in development builds.
+            </PageError.Body>
+          </PageError.Content>
+        </PageError>
       </EmptyLayout>
     );
   }
