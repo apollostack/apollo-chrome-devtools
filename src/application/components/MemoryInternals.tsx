@@ -257,7 +257,7 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
       </div>
       <FullWidthLayout.Main className="flex flex-col gap-4 overflow-auto">
         {selectedView === "chart" ? (
-          <div className="flex flex-wrap gap-4">
+          <div className="grid grid-cols-1 md:flex md:flex-wrap gap-4">
             <CacheSize cacheSize={caches.cache.fragmentQueryDocuments} />
             <CacheSize
               cacheSize={caches.fragmentRegistry.findFragmentSpreads}
