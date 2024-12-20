@@ -397,7 +397,11 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
             {selectedCacheComponent.render(samples)}
           </>
         ) : selectedView === "raw" ? (
-          <JSONTreeViewer hideRoot data={memoryInternals.raw} />
+          <JSONTreeViewer
+            hideRoot
+            data={memoryInternals.raw}
+            shouldExpandNodeInitially={() => true}
+          />
         ) : null}
       </FullWidthLayout.Main>
     </FullWidthLayout>
