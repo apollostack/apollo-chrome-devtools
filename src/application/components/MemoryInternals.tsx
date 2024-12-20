@@ -259,9 +259,6 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
         {selectedView === "chart" ? (
           <div className="flex flex-wrap gap-4">
             <CacheSize cacheSize={caches.cache.fragmentQueryDocuments} />
-            {caches.queryManager.documentTransforms?.map(({ cache }, index) => (
-              <CacheSize key={index} cacheSize={cache} />
-            ))}
             <CacheSize
               cacheSize={caches.fragmentRegistry.findFragmentSpreads}
             />
@@ -272,6 +269,14 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
               cacheSize={caches.inMemoryCache.executeSubSelectedArray}
             />
             <CacheSize cacheSize={caches.inMemoryCache.maybeBroadcastWatch} />
+            <CacheSize cacheSize={caches.queryManager.getDocumentInfo} />
+
+            <CacheSize cacheSize={caches.canonicalStringify} />
+            <CacheSize cacheSize={caches.parser} />
+            <CacheSize cacheSize={caches.print} />
+            {caches.queryManager.documentTransforms?.map(({ cache }, index) => (
+              <CacheSize key={index} cacheSize={cache} />
+            ))}
             {caches.links.map((link, index) => (
               <CacheSize
                 key={index}
@@ -282,11 +287,6 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
                 }
               />
             ))}
-            <CacheSize cacheSize={caches.queryManager.getDocumentInfo} />
-
-            <CacheSize cacheSize={caches.canonicalStringify} />
-            <CacheSize cacheSize={caches.parser} />
-            <CacheSize cacheSize={caches.print} />
           </div>
         ) : selectedView === "raw" ? (
           <JSONTreeViewer
