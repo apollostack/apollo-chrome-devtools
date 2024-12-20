@@ -5,7 +5,6 @@ import IconOutlinkSm from "@apollo/icons/small/IconOutlink.svg";
 import IconOperations from "@apollo/icons/default/IconOperations.svg";
 import IconObserve from "@apollo/icons/default/IconObserve.svg";
 import IconInfo from "@apollo/icons/default/IconInfo.svg";
-import IconPause from "@apollo/icons/default/IconPause.svg";
 
 import { FullWidthLayout } from "./Layouts/FullWidthLayout";
 import { PageSpinner } from "./PageSpinner";
@@ -14,27 +13,14 @@ import type {
   MemoryInternalsQuery,
   MemoryInternalsQueryVariables,
 } from "../types/gql";
-import { Select } from "./Select";
-import type { ReactElement, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { useState } from "react";
 import { ButtonGroup } from "./ButtonGroup";
 import { Button } from "./Button";
 import { Tooltip } from "./Tooltip";
 import { JSONTreeViewer } from "./JSONTreeViewer";
-import {
-  CartesianGrid,
-  ReferenceLine,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-  Tooltip as ChartTooltip,
-  AreaChart,
-  Area,
-} from "recharts";
-import { colors } from "@apollo/brand";
-import { StatusBadge } from "./StatusBadge";
-import { useInterval } from "../hooks/useInterval";
-import { Spinner } from "./Spinner";
+import type { CacheSizes } from "@apollo/client/utilities";
+import clsx from "clsx";
 
 interface MemoryInternalsProps {
   clientId: string | undefined;
@@ -119,6 +105,7 @@ const MEMORY_INTERNALS_QUERY: TypedDocumentNode<
   }
 
   fragment CacheSizeFields on CacheSize {
+    key
     size
     limit
   }
@@ -128,145 +115,47 @@ type Caches = NonNullable<
   NonNullable<MemoryInternalsQuery["client"]>["memoryInternals"]
 >["caches"];
 
-type InternalCache =
-  | "print"
-  | "parser"
-  | "canonicalStringify"
-  | "links"
-  | "queryManager.getDocumentInfo"
-  | "queryManager.documentTransforms"
-  | "fragmentRegistry.lookup"
-  | "fragmentRegistry.findFragmentSpreads"
-  | "fragmentRegistry.transform"
-  | "cache.fragmentQueryDocuments"
-  | "addTypenameDocumentTransform"
-  | "inMemoryCache.executeSelectionSet"
-  | "inMemoryCache.executeSubSelectedArray"
-  | "inMemoryCache.maybeBroadcastWatch";
-
-const SAMPLE_RATE_MS = 1000;
-
-interface Sample {
-  timestamp: number;
-  caches: Caches;
-}
-
-const cacheComponents: Record<
-  InternalCache,
-  { render: (samples: Sample[]) => JSX.Element; description?: ReactElement }
-> = {
-  print: {
-    render: (samples) => (
-      <CacheSize
-        samples={samples.map((sample) => ({
-          timestamp: sample.timestamp,
-          cacheSize: sample.caches.print,
-        }))}
-      />
-    ),
-    description: (
-      <>
-        <p>
-          Cache size for the{" "}
-          <a
-            href="https://github.com/apollographql/apollo-client/blob/main/src/utilities/graphql/print.ts"
-            target="_blank"
-            rel="noopener noreferer noreferrer"
-            className="inline-flex items-center underline font-medium gap-1"
-          >
-            print <IconOutlinkSm className="size-3" />
-          </a>{" "}
-          function.
-        </p>
-        <p>
-          It is called with transformed <code>DocumentNode</code>s.
-        </p>
-        <p>
-          This method is called to transform a GraphQL query AST parsed by{" "}
-          <code>gql</code> back into a GraphQL string.
-        </p>
-      </>
-    ),
-  },
-  parser: {
-    render: (samples) => (
-      <CacheSize
-        samples={samples.map((sample) => ({
-          timestamp: sample.timestamp,
-          cacheSize: sample.caches.parser,
-        }))}
-      />
-    ),
-  },
-  canonicalStringify: {
-    render: (samples) => (
-      <CacheSize
-        samples={samples.map((sample) => ({
-          timestamp: sample.timestamp,
-          cacheSize: sample.caches.canonicalStringify,
-        }))}
-      />
-    ),
-  },
-  links: { render: () => <TODOCacheSize /> },
-  ["queryManager.getDocumentInfo"]: {
-    render: () => <TODOCacheSize />,
-  },
-  ["queryManager.documentTransforms"]: {
-    render: () => <TODOCacheSize />,
-  },
-  ["fragmentRegistry.lookup"]: {
-    render: () => <TODOCacheSize />,
-  },
-  ["fragmentRegistry.findFragmentSpreads"]: {
-    render: () => <TODOCacheSize />,
-  },
-  ["fragmentRegistry.transform"]: {
-    render: () => <TODOCacheSize />,
-  },
-  ["cache.fragmentQueryDocuments"]: {
-    render: () => <TODOCacheSize />,
-  },
-  ["addTypenameDocumentTransform"]: {
-    render: () => <TODOCacheSize />,
-  },
-  ["inMemoryCache.executeSelectionSet"]: {
-    render: (samples) => (
-      <CacheSize
-        samples={samples.map((sample) => ({
-          timestamp: sample.timestamp,
-          cacheSize: sample.caches.inMemoryCache.executeSelectionSet,
-        }))}
-      />
-    ),
-  },
-  ["inMemoryCache.executeSubSelectedArray"]: {
-    render: (samples) => (
-      <CacheSize
-        samples={samples.map((sample) => ({
-          timestamp: sample.timestamp,
-          cacheSize: sample.caches.inMemoryCache.executeSubSelectedArray,
-        }))}
-      />
-    ),
-  },
-  ["inMemoryCache.maybeBroadcastWatch"]: {
-    render: (samples) => (
-      <CacheSize
-        samples={samples.map((sample) => ({
-          timestamp: sample.timestamp,
-          cacheSize: sample.caches.inMemoryCache.maybeBroadcastWatch,
-        }))}
-      />
-    ),
-  },
+const descriptions: Record<keyof CacheSizes, ReactNode> = {
+  print: (
+    <>
+      <p>
+        Cache size for the{" "}
+        <a
+          href="https://github.com/apollographql/apollo-client/blob/main/src/utilities/graphql/print.ts"
+          target="_blank"
+          rel="noopener noreferer noreferrer"
+          className="inline-flex items-center underline font-medium gap-1"
+        >
+          print <IconOutlinkSm className="size-3" />
+        </a>{" "}
+        function.
+      </p>
+      <p>
+        It is called with transformed <code>DocumentNode</code>s.
+      </p>
+      <p>
+        This method is called to transform a GraphQL query AST parsed by{" "}
+        <code>gql</code> back into a GraphQL string.
+      </p>
+    </>
+  ),
+  parser: "",
+  canonicalStringify: "",
+  "PersistedQueryLink.persistedQueryHashes": "",
+  "removeTypenameFromVariables.getVariableDefinitions": "",
+  "queryManager.getDocumentInfo": "",
+  "documentTransform.cache": "",
+  "fragmentRegistry.lookup": "",
+  "fragmentRegistry.findFragmentSpreads": "",
+  "fragmentRegistry.transform": "",
+  "cache.fragmentQueryDocuments": "",
+  "inMemoryCache.executeSelectionSet": "",
+  "inMemoryCache.executeSubSelectedArray": "",
+  "inMemoryCache.maybeBroadcastWatch": "",
 };
 
 export function MemoryInternals({ clientId }: MemoryInternalsProps) {
-  const [selectedCache, setSelectedCache] = useState<InternalCache>("print");
   const [selectedView, setSelectedView] = useState<"raw" | "chart">("chart");
-  const selectedCacheComponent = cacheComponents[selectedCache];
-  const [samples, setSamples] = useState<Sample[]>([]);
 
   const { data, networkStatus, error } = useQuery(MEMORY_INTERNALS_QUERY, {
     variables: { clientId: clientId as string },
@@ -280,12 +169,6 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
 
   const memoryInternals = data?.client?.memoryInternals;
   const caches = memoryInternals?.caches;
-
-  useInterval(() => {
-    if (caches) {
-      setSamples((prev) => [...prev, { timestamp: Date.now(), caches }]);
-    }
-  }, SAMPLE_RATE_MS);
 
   if (networkStatus === NetworkStatus.loading) {
     return (
@@ -352,50 +235,37 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
       </div>
       <FullWidthLayout.Main className="flex flex-col gap-4 overflow-auto">
         {selectedView === "chart" ? (
-          <>
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <Select
-                  defaultValue="print"
-                  value={selectedCache}
-                  onValueChange={(value) =>
-                    setSelectedCache(value as InternalCache)
-                  }
-                >
-                  {Object.keys(cacheComponents).map((key) => (
-                    <SelectOption label={key} key={key} />
-                  ))}
-                </Select>
-                {selectedCacheComponent.description && (
-                  <Tooltip
-                    content={
-                      <div className="flex flex-col gap-2">
-                        {selectedCacheComponent.description}
-                      </div>
-                    }
-                  >
-                    <span>
-                      <IconInfo className="text-icon-primary dark:text-icon-primary-dark size-4" />
-                    </span>
-                  </Tooltip>
-                )}
-              </div>
-              <div className="flex gap-6 items-center">
-                <StatusBadge color="red" variant="hidden">
-                  Recording
-                </StatusBadge>
-                <Button
-                  size="md"
-                  variant="secondary"
-                  icon={<IconPause />}
-                  className="focus:ring-0"
-                >
-                  Pause
-                </Button>
-              </div>
-            </div>
-            {selectedCacheComponent.render(samples)}
-          </>
+          <div className="flex flex-wrap gap-2">
+            <CacheSize cacheSize={caches.cache.fragmentQueryDocuments} />
+            {caches.queryManager.documentTransforms?.map(({ cache }, index) => (
+              <CacheSize key={index} cacheSize={cache} />
+            ))}
+            <CacheSize
+              cacheSize={caches.fragmentRegistry.findFragmentSpreads}
+            />
+            <CacheSize cacheSize={caches.fragmentRegistry.lookup} />
+            <CacheSize cacheSize={caches.fragmentRegistry.transform} />
+            <CacheSize cacheSize={caches.inMemoryCache.executeSelectionSet} />
+            <CacheSize
+              cacheSize={caches.inMemoryCache.executeSubSelectedArray}
+            />
+            <CacheSize cacheSize={caches.inMemoryCache.maybeBroadcastWatch} />
+            {caches.links.map((link, index) => (
+              <CacheSize
+                key={index}
+                cacheSize={
+                  link.__typename === "PersistedQueryLinkCacheSizes"
+                    ? link.persistedQueryHashes
+                    : link.getVariableDefinitions
+                }
+              />
+            ))}
+            <CacheSize cacheSize={caches.queryManager.getDocumentInfo} />
+
+            <CacheSize cacheSize={caches.canonicalStringify} />
+            <CacheSize cacheSize={caches.parser} />
+            <CacheSize cacheSize={caches.print} />
+          </div>
         ) : selectedView === "raw" ? (
           <JSONTreeViewer
             hideRoot
@@ -405,14 +275,6 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
         ) : null}
       </FullWidthLayout.Main>
     </FullWidthLayout>
-  );
-}
-
-function SelectOption({ label }: { label: string }) {
-  return (
-    <Select.Option value={label}>
-      <span className="font-code">{label}</span>
-    </Select.Option>
   );
 }
 
@@ -445,84 +307,52 @@ function EmptyLayout({ children }: { children: ReactNode }) {
   );
 }
 
-function CacheSize({
-  samples,
-}: {
-  samples: Array<{ timestamp: number; cacheSize: CacheSize | null }>;
-}) {
-  const baseTimestamp = samples[0]?.timestamp ?? 0;
-  const limit = samples[0]?.cacheSize?.limit ?? 0;
-
-  // Don't redraw every second but instead wait until we have the next batch of
-  // samples.
-  const throttledLength = Math.floor(samples.length / 5) * 5;
-
-  if (samples.length < 5) {
-    return (
-      <div className="text-xl size-full flex items-center justify-center">
-        <Spinner size="sm" className="mr-2" /> Gathering samples
-      </div>
-    );
+function CacheSize({ cacheSize }: { cacheSize: CacheSize }) {
+  if (cacheSize.size === null || cacheSize.limit === null) {
+    return null;
   }
 
-  return (
-    <ResponsiveContainer height="100%" width="100%">
-      <AreaChart
-        data={samples.slice(0, throttledLength).map((sample) => ({
-          timestamp: Math.floor((sample.timestamp - baseTimestamp) / 60),
-          size: sample.cacheSize?.size,
-          limit,
-        }))}
-      >
-        <defs>
-          <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-            <stop
-              offset="5%"
-              stopColor={colors.tokens.flowchart.d.dark}
-              stopOpacity={0.8}
-            />
-            <stop
-              offset="95%"
-              stopColor={colors.tokens.flowchart.d.dark}
-              stopOpacity={0}
-            />
-          </linearGradient>
-        </defs>
-        <XAxis
-          dataKey="timestamp"
-          stroke={colors.tokens.border.primary.dark}
-          label="Time (s)"
-        />
-        <YAxis
-          stroke={colors.tokens.border.primary.dark}
-          min={100}
-          domain={([, dataMax]) => [0, Math.max(dataMax, 100, limit)]}
-        />
-        <CartesianGrid
-          stroke={colors.tokens.border.primary.dark}
-          strokeDasharray="3 3"
-        />
-        <Area
-          type="monotone"
-          dataKey="size"
-          stroke={colors.tokens.border.info.dark}
-          fillOpacity={1}
-          fill="url(#colorValue)"
-        />
-        <ChartTooltip />
-        {limit > 0 && (
-          <ReferenceLine
-            y={limit}
-            label="Limit"
-            strokeDashoffset="3 3"
-            stroke={colors.tokens.border.error.dark}
-          />
-        )}
-      </AreaChart>
-    </ResponsiveContainer>
-  );
-}
+  const description = descriptions[cacheSize.key as keyof CacheSizes];
+  const percentUsed = (cacheSize.size / cacheSize.limit) * 100;
 
-function TODOCacheSize() {
-  return "TODO: Implement me";
+  return (
+    <div className="border border-primary dark:border-primary-dark rounded p-3 flex flex-col gap-4">
+      <h2 className="text-heading dark:text-heading-dark text-sm font-code flex gap-2 items-center">
+        {cacheSize.key}
+        {description && (
+          <Tooltip
+            content={<div className="flex flex-col gap-2">{description}</div>}
+          >
+            <span>
+              <IconInfo className="text-icon-primary dark:text-icon-primary-dark size-4" />
+            </span>
+          </Tooltip>
+        )}
+      </h2>
+      <div className="flex gap-2 items-center">
+        <div className="flex flex-col gap-1">
+          <span className="uppercase text-secondary dark:text-secondary-dark">
+            Size
+          </span>
+          <span className="font-code">{cacheSize.size}</span>
+        </div>
+        <div className="flex flex-col gap-1">
+          <span className="uppercase text-secondary dark:text-secondary-dark">
+            Limit
+          </span>
+          <span className="font-code">{cacheSize.limit}</span>
+        </div>
+        <div
+          className={clsx("text-3xl", {
+            "text-error dark:text-error-dark": percentUsed >= 90,
+            "text-warning dark:text-warning-dark":
+              percentUsed >= 70 && percentUsed < 90,
+            "text-success dark:text-success-dark-dark": percentUsed < 70,
+          })}
+        >
+          {percentUsed.toFixed(1)}%
+        </div>
+      </div>
+    </div>
+  );
 }

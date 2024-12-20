@@ -269,16 +269,19 @@ export type MemoryInternalsQuery = {
         __typename: "MemoryInternalsCaches";
         print: {
           __typename: "CacheSize";
+          key: string;
           size: number | null;
           limit: number | null;
         };
         parser: {
           __typename: "CacheSize";
+          key: string;
           size: number | null;
           limit: number | null;
         };
         canonicalStringify: {
           __typename: "CacheSize";
+          key: string;
           size: number | null;
           limit: number | null;
         };
@@ -287,6 +290,7 @@ export type MemoryInternalsQuery = {
               __typename: "PersistedQueryLinkCacheSizes";
               persistedQueryHashes: {
                 __typename: "CacheSize";
+                key: string;
                 size: number | null;
                 limit: number | null;
               };
@@ -295,6 +299,7 @@ export type MemoryInternalsQuery = {
               __typename: "RemoveTypenameFromVariablesLinkCacheSizes";
               getVariableDefinitions: {
                 __typename: "CacheSize";
+                key: string;
                 size: number | null;
                 limit: number | null;
               };
@@ -304,6 +309,7 @@ export type MemoryInternalsQuery = {
           __typename: "QueryManagerCacheSizes";
           getDocumentInfo: {
             __typename: "CacheSize";
+            key: string;
             size: number | null;
             limit: number | null;
           };
@@ -311,6 +317,7 @@ export type MemoryInternalsQuery = {
             __typename: "DocumentTransformCacheSizes";
             cache: {
               __typename: "CacheSize";
+              key: string;
               size: number | null;
               limit: number | null;
             };
@@ -320,16 +327,19 @@ export type MemoryInternalsQuery = {
           __typename: "FragmentRegistryCacheSizes";
           lookup: {
             __typename: "CacheSize";
+            key: string;
             size: number | null;
             limit: number | null;
           };
           findFragmentSpreads: {
             __typename: "CacheSize";
+            key: string;
             size: number | null;
             limit: number | null;
           };
           transform: {
             __typename: "CacheSize";
+            key: string;
             size: number | null;
             limit: number | null;
           };
@@ -338,6 +348,7 @@ export type MemoryInternalsQuery = {
           __typename: "BaseCacheSizes";
           fragmentQueryDocuments: {
             __typename: "CacheSize";
+            key: string;
             size: number | null;
             limit: number | null;
           };
@@ -346,6 +357,7 @@ export type MemoryInternalsQuery = {
           __typename: "DocumentTransformCacheSizes";
           cache: {
             __typename: "CacheSize";
+            key: string;
             size: number | null;
             limit: number | null;
           };
@@ -354,16 +366,19 @@ export type MemoryInternalsQuery = {
           __typename: "InMemoryCacheSizes";
           maybeBroadcastWatch: {
             __typename: "CacheSize";
+            key: string;
             size: number | null;
             limit: number | null;
           };
           executeSelectionSet: {
             __typename: "CacheSize";
+            key: string;
             size: number | null;
             limit: number | null;
           };
           executeSubSelectedArray: {
             __typename: "CacheSize";
+            key: string;
             size: number | null;
             limit: number | null;
           };
@@ -375,6 +390,7 @@ export type MemoryInternalsQuery = {
 
 export type CacheSizeFields = {
   __typename: "CacheSize";
+  key: string;
   size: number | null;
   limit: number | null;
 };
