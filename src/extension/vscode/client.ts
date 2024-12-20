@@ -110,8 +110,12 @@ function registerClient(
   function getMutationsForClient() {
     return getMutations(getClient()?.queryManager.mutationStore ?? {});
   }
+  function getMemoryInternalsForClient() {
+    return getClient()?.getMemoryInternals?.();
+  }
   wsRpcHandler("getQueries", getQueriesForClient, { signal });
   wsRpcHandler("getMutations", getMutationsForClient, { signal });
+  wsRpcHandler("getMemoryInternals", getMemoryInternalsForClient, { signal });
   wsRpcHandler("getCache", () => getClient()?.cache.extract(true) ?? {}, {
     signal,
   });
