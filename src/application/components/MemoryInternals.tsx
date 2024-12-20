@@ -21,6 +21,7 @@ import { Tooltip } from "./Tooltip";
 import { JSONTreeViewer } from "./JSONTreeViewer";
 import type { CacheSizes } from "@apollo/client/utilities";
 import clsx from "clsx";
+import { ExternalLink } from "./ExternalLink";
 
 interface MemoryInternalsProps {
   clientId: string | undefined;
@@ -116,14 +117,12 @@ const descriptions: Record<keyof CacheSizes, ReactNode> = {
     <>
       <p>
         Cache size for the{" "}
-        <a
+        <ExternalLink
           href="https://github.com/apollographql/apollo-client/blob/main/src/utilities/graphql/print.ts"
-          target="_blank"
-          rel="noopener noreferer noreferrer"
-          className="inline-flex items-center underline font-medium gap-1"
+          className="inline-flex items-center gap-1"
         >
-          print <IconOutlinkSm className="size-3" />
-        </a>{" "}
+          <code>print</code> <IconOutlinkSm className="size-3" />
+        </ExternalLink>{" "}
         function.
       </p>
       <p>
@@ -135,8 +134,34 @@ const descriptions: Record<keyof CacheSizes, ReactNode> = {
       </p>
     </>
   ),
-  parser: "",
-  canonicalStringify: "",
+  parser: (
+    <>
+      <p>
+        Cache size for the{" "}
+        <ExternalLink
+          href="https://github.com/apollographql/apollo-client/blob/main/src/react/parser/index.ts"
+          className="inline-flex items-center gap-1"
+        >
+          <code>parser</code> <IconOutlinkSm className="size-3" />
+        </ExternalLink>{" "}
+        function.
+      </p>
+      <p>
+        It is called with user-provided <code>DocumentNode</code>s.
+      </p>
+    </>
+  ),
+  canonicalStringify: (
+    <p>
+      Cache used by{" "}
+      <ExternalLink
+        href="https://github.com/apollographql/apollo-client/blob/main/src/utilities/common/canonicalStringify.ts"
+        className="inline-flex items-center gap-1"
+      >
+        <code>canonicalStringify</code> <IconOutlinkSm className="size-3" />
+      </ExternalLink>
+    </p>
+  ),
   "PersistedQueryLink.persistedQueryHashes": "",
   "removeTypenameFromVariables.getVariableDefinitions": "",
   "queryManager.getDocumentInfo": "",
