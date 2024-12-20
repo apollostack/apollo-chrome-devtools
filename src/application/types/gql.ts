@@ -262,6 +262,7 @@ export type MemoryInternalsQuery = {
   client: {
     __typename: "Client";
     id: string;
+    version: string;
     memoryInternals: {
       __typename: "MemoryInternals";
       raw: JSON | null;

@@ -17,6 +17,9 @@ import { Button } from "./Button";
 import { Tooltip } from "./Tooltip";
 import { JSONTreeViewer } from "./JSONTreeViewer";
 import { CacheSize } from "./CacheSize";
+import { lt } from "semver";
+import { ExternalLink } from "./ExternalLink";
+import { PageError } from "./PageError";
 
 interface MemoryInternalsProps {
   clientId: string | undefined;
@@ -29,6 +32,7 @@ const MEMORY_INTERNALS_QUERY: TypedDocumentNode<
   query MemoryInternalsQuery($clientId: ID!) {
     client(id: $clientId) {
       id
+      version
       memoryInternals {
         raw
         caches {
@@ -122,6 +126,7 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
 
   const memoryInternals = data?.client?.memoryInternals;
   const caches = memoryInternals?.caches;
+  const version = data?.client?.version;
 
   if (networkStatus === NetworkStatus.loading) {
     return (
@@ -131,7 +136,32 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
     );
   }
 
-  // TODO: Show a message for clients older < 3.9
+  if (version && lt(version, "3.9.0")) {
+    return (
+      <EmptyLayout>
+        <PageError className="mt-8">
+          <PageError.Content>
+            <PageError.Title>Memory management not available</PageError.Title>
+            <PageError.Body>
+              <p>
+                Memory management is available in Apollo Client{" "}
+                <ExternalLink
+                  href="https://github.com/apollographql/apollo-client/releases/tag/v3.9.0"
+                  className="font-medium inline-flex items-center gap-2"
+                >
+                  3.9.0
+                  <IconOutlink className="size-4" />
+                </ExternalLink>{" "}
+                or greater. Please upgrade your Apollo Client version to use
+                this feature.
+              </p>
+            </PageError.Body>
+          </PageError.Content>
+        </PageError>
+      </EmptyLayout>
+    );
+  }
+
   if (!caches) {
     return (
       <EmptyLayout>
@@ -241,15 +271,13 @@ function EmptyLayout({ children }: { children: ReactNode }) {
         <p className="text-secondary dark:text-secondary-dark">
           Learn how Apollo Client manages memory and how to set custom cache
           size limits in the{" "}
-          <a
+          <ExternalLink
             href="https://www.apollographql.com/docs/react/caching/memory-management/"
             className="font-medium underline inline-flex items-center gap-2"
-            target="_blank"
-            rel="noopener noreferer noreferrer"
           >
             docs
             <IconOutlink className="size-4" />
-          </a>
+          </ExternalLink>
           .
         </p>
       </header>
