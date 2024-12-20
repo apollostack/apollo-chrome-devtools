@@ -111,10 +111,6 @@ const MEMORY_INTERNALS_QUERY: TypedDocumentNode<
   }
 `;
 
-type Caches = NonNullable<
-  NonNullable<MemoryInternalsQuery["client"]>["memoryInternals"]
->["caches"];
-
 const descriptions: Record<keyof CacheSizes, ReactNode> = {
   print: (
     <>
