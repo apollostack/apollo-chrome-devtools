@@ -262,7 +262,10 @@ export function CacheSize({ cacheSize }: { cacheSize: CacheSizeType }) {
           {percentUsed > 70 ? (
             <IconWarning className="text-current size-6" />
           ) : null}
-          {percentUsed < 1 ? percentUsed.toFixed(1) : Math.floor(percentUsed)}%
+          {percentUsed > 0 && percentUsed < 1
+            ? percentUsed.toFixed(1)
+            : Math.floor(percentUsed)}
+          %
         </div>
       </div>
     </div>
