@@ -13,12 +13,9 @@ const DESCRIPTIONS: Record<keyof CacheSizes, ReactNode> = {
     <>
       <p>
         Cache size for the{" "}
-        <ExternalLink
-          href="https://github.com/apollographql/apollo-client/blob/main/src/utilities/graphql/print.ts"
-          className="inline-flex items-center gap-1"
-        >
-          <code>print</code> <IconOutlink className="size-3" />
-        </ExternalLink>{" "}
+        <TooltipLink href="https://github.com/apollographql/apollo-client/blob/main/src/utilities/graphql/print.ts">
+          <code>print</code>
+        </TooltipLink>{" "}
         function.
       </p>
       <p>
@@ -34,12 +31,9 @@ const DESCRIPTIONS: Record<keyof CacheSizes, ReactNode> = {
     <>
       <p>
         Cache size for the{" "}
-        <ExternalLink
-          href="https://github.com/apollographql/apollo-client/blob/main/src/react/parser/index.ts"
-          className="inline-flex items-center gap-1"
-        >
-          <code>parser</code> <IconOutlink className="size-3" />
-        </ExternalLink>{" "}
+        <TooltipLink href="https://github.com/apollographql/apollo-client/blob/main/src/react/parser/index.ts">
+          <code>parser</code>
+        </TooltipLink>{" "}
         function.
       </p>
       <p>
@@ -50,21 +44,18 @@ const DESCRIPTIONS: Record<keyof CacheSizes, ReactNode> = {
   canonicalStringify: (
     <p>
       Cache used by{" "}
-      <ExternalLink
-        href="https://github.com/apollographql/apollo-client/blob/main/src/utilities/common/canonicalStringify.ts"
-        className="inline-flex items-center gap-1"
-      >
-        <code>canonicalStringify</code> <IconOutlink className="size-3" />
-      </ExternalLink>
+      <TooltipLink href="https://github.com/apollographql/apollo-client/blob/main/src/utilities/common/canonicalStringify.ts">
+        <code>canonicalStringify</code>
+      </TooltipLink>
     </p>
   ),
   "PersistedQueryLink.persistedQueryHashes": (
     <>
       <p>
         A cache inside of
-        <ExternalLink href="https://github.com/apollographql/apollo-client/blob/main/src/link/persisted-queries/index.ts">
+        <TooltipLink href="https://github.com/apollographql/apollo-client/blob/main/src/link/persisted-queries/index.ts">
           <code>PersistedQueryLink</code>
-        </ExternalLink>
+        </TooltipLink>
         .
       </p>
 
@@ -78,13 +69,9 @@ const DESCRIPTIONS: Record<keyof CacheSizes, ReactNode> = {
     <>
       <p>
         A cache inside of{" "}
-        <ExternalLink
-          href="https://github.com/apollographql/apollo-client/blob/main/src/core/QueryManager.ts"
-          className="inline-flex items-center gap-1"
-        >
+        <TooltipLink href="https://github.com/apollographql/apollo-client/blob/main/src/core/QueryManager.ts">
           <code>QueryManager</code>
-          <IconOutlink className="size-3" />
-        </ExternalLink>
+        </TooltipLink>
         .
       </p>
       <p>It is called with transformed `DocumentNode`s.</p>
@@ -97,9 +84,9 @@ const DESCRIPTIONS: Record<keyof CacheSizes, ReactNode> = {
     <>
       <p>
         A cache inside of
-        <ExternalLink href="https://github.com/apollographql/apollo-client/blob/main/src/cache/inmemory/fragmentRegistry.ts">
+        <TooltipLink href="https://github.com/apollographql/apollo-client/blob/main/src/cache/inmemory/fragmentRegistry.ts">
           <code>FragmentRegistry</code>
-        </ExternalLink>
+        </TooltipLink>
         .
       </p>
 
@@ -167,5 +154,20 @@ export function CacheSize({ cacheSize }: { cacheSize: CacheSizeType }) {
         </div>
       </div>
     </div>
+  );
+}
+
+function TooltipLink({
+  children,
+  href,
+}: {
+  children: ReactNode;
+  href: string;
+}) {
+  return (
+    <ExternalLink href={href} className="inline-flex items-center gap-1">
+      {children}
+      <IconOutlink className="size-3" />
+    </ExternalLink>
   );
 }
