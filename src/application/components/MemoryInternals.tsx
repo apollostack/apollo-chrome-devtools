@@ -167,7 +167,7 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
       <EmptyLayout>
         <p className="text-secondary dark:text-secondary-dark">
           Could not get memory internals for the client. This may be a result of
-          running your application in production mode as access to memory
+          running your application in production mode. Access to memory
           internals is disabled in production builds.
         </p>
       </EmptyLayout>
