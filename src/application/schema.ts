@@ -44,19 +44,21 @@ function createResolvers(client: RpcClient): Resolvers {
         return {
           raw: memoryInternals,
           caches: {
-            print: getCacheSize(sizes.print, limits.print),
-            parser: getCacheSize(sizes.parser, limits.parser),
+            print: getCacheSize("print", sizes.print, limits),
+            parser: getCacheSize("parser", sizes.parser, limits),
             canonicalStringify: getCacheSize(
+              "canonicalStringify",
               sizes.canonicalStringify,
-              limits.canonicalStringify
+              limits
             ),
             links: sizes.links
               .map((linkCache) => getLinkCacheSize(linkCache, limits))
               .filter(Boolean),
             queryManager: {
               getDocumentInfo: getCacheSize(
+                "queryManager.getDocumentInfo",
                 sizes.queryManager.getDocumentInfo,
-                limits["queryManager.getDocumentInfo"]
+                limits
               ),
               documentTransforms: getDocumentTransformCacheSizes(
                 sizes.queryManager.documentTransforms,
@@ -65,22 +67,26 @@ function createResolvers(client: RpcClient): Resolvers {
             },
             fragmentRegistry: {
               lookup: getCacheSize(
+                "fragmentRegistry.lookup",
                 sizes.fragmentRegistry?.lookup,
-                limits["fragmentRegistry.lookup"]
+                limits
               ),
               findFragmentSpreads: getCacheSize(
+                "fragmentRegistry.findFragmentSpreads",
                 sizes.fragmentRegistry?.findFragmentSpreads,
-                limits["fragmentRegistry.findFragmentSpreads"]
+                limits
               ),
               transform: getCacheSize(
+                "fragmentRegistry.transform",
                 sizes.fragmentRegistry?.transform,
-                limits["fragmentRegistry.transform"]
+                limits
               ),
             },
             cache: {
               fragmentQueryDocuments: getCacheSize(
+                "cache.fragmentQueryDocuments",
                 sizes.cache?.fragmentQueryDocuments,
-                limits["cache.fragmentQueryDocuments"]
+                limits
               ),
             },
             addTypenameDocumentTransform: sizes.addTypenameDocumentTransform
@@ -91,16 +97,19 @@ function createResolvers(client: RpcClient): Resolvers {
               : null,
             inMemoryCache: {
               maybeBroadcastWatch: getCacheSize(
+                "inMemoryCache.maybeBroadcastWatch",
                 sizes.inMemoryCache?.maybeBroadcastWatch,
-                limits["inMemoryCache.maybeBroadcastWatch"]
+                limits
               ),
               executeSelectionSet: getCacheSize(
+                "inMemoryCache.executeSelectionSet",
                 sizes.inMemoryCache?.executeSelectionSet,
-                limits["inMemoryCache.executeSelectionSet"]
+                limits
               ),
               executeSubSelectedArray: getCacheSize(
+                "inMemoryCache.executeSubSelectedArray",
                 sizes.inMemoryCache?.executeSubSelectedArray,
-                limits["inMemoryCache.executeSubSelectedArray"]
+                limits
               ),
             },
           },
@@ -164,12 +173,12 @@ function createResolvers(client: RpcClient): Resolvers {
 
 type MemoryLimits = Record<string, number | undefined>;
 
-function getCacheSize(size: number | undefined, limit: number | undefined) {
-  if (!size) {
-    return null;
-  }
-
-  return { size, limit: limit ?? null };
+function getCacheSize(
+  key: string,
+  size: number | undefined,
+  limits: MemoryLimits
+) {
+  return { key, size: size ?? null, limit: limits[key] ?? null };
 }
 
 function getDocumentTransformCacheSizes(
@@ -177,7 +186,7 @@ function getDocumentTransformCacheSizes(
   limits: MemoryLimits
 ) {
   return caches.map(({ cache }) => ({
-    cache: getCacheSize(cache, limits["documentTransform.cache"]),
+    cache: getCacheSize("documentTransform.cache", cache, limits),
   }));
 }
 
@@ -220,19 +229,21 @@ function getLinkCacheSize(
   | null {
   if (isPersistedQueryLinkCache(linkCache)) {
     return {
-      persistedQueryHashes: {
-        size: linkCache.PersistedQueryLink.persistedQueryHashes,
-        limit: limits["PersistedQueryLink.persistedQueryHashes"],
-      },
+      persistedQueryHashes: getCacheSize(
+        "PersistedQueryLink.persistedQueryHashes",
+        linkCache.PersistedQueryLink.persistedQueryHashes,
+        limits
+      ),
     } satisfies PersistedQueryLinkCacheSizes;
   }
 
   if (isRemoveTypenameFromVariablesLinkCache(linkCache)) {
     return {
-      getVariableDefinitions: {
-        size: linkCache.removeTypenameFromVariables.getVariableDefinitions,
-        limit: limits["removeTypenameFromVariables.getVariableDefinitions"],
-      },
+      getVariableDefinitions: getCacheSize(
+        "removeTypenameFromVariables.getVariableDefinitions",
+        linkCache.removeTypenameFromVariables.getVariableDefinitions,
+        limits
+      ),
     } satisfies RemoveTypenameFromVariablesLinkCacheSizes;
   }
 

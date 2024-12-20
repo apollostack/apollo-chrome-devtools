@@ -45,11 +45,12 @@ export type Scalars = {
 
 export type BaseCacheSizes = {
   __typename: "BaseCacheSizes";
-  fragmentQueryDocuments: Maybe<CacheSize>;
+  fragmentQueryDocuments: CacheSize;
 };
 
 export type CacheSize = {
   __typename: "CacheSize";
+  key: Scalars["String"]["output"];
   limit: Maybe<Scalars["Int"]["output"]>;
   size: Maybe<Scalars["Int"]["output"]>;
 };
@@ -79,14 +80,14 @@ export type ClientQueries = {
 
 export type DocumentTransformCacheSizes = {
   __typename: "DocumentTransformCacheSizes";
-  cache: Maybe<CacheSize>;
+  cache: CacheSize;
 };
 
 export type FragmentRegistryCacheSizes = {
   __typename: "FragmentRegistryCacheSizes";
-  findFragmentSpreads: Maybe<CacheSize>;
-  lookup: Maybe<CacheSize>;
-  transform: Maybe<CacheSize>;
+  findFragmentSpreads: CacheSize;
+  lookup: CacheSize;
+  transform: CacheSize;
 };
 
 export type GraphQLErrorSourceLocation = {
@@ -97,9 +98,9 @@ export type GraphQLErrorSourceLocation = {
 
 export type InMemoryCacheSizes = {
   __typename: "InMemoryCacheSizes";
-  executeSelectionSet: Maybe<CacheSize>;
-  executeSubSelectedArray: Maybe<CacheSize>;
-  maybeBroadcastWatch: Maybe<CacheSize>;
+  executeSelectionSet: CacheSize;
+  executeSubSelectedArray: CacheSize;
+  maybeBroadcastWatch: CacheSize;
 };
 
 export type LinkCacheSize =
@@ -116,18 +117,18 @@ export type MemoryInternalsCaches = {
   __typename: "MemoryInternalsCaches";
   addTypenameDocumentTransform: Maybe<Array<DocumentTransformCacheSizes>>;
   cache: BaseCacheSizes;
-  canonicalStringify: Maybe<CacheSize>;
+  canonicalStringify: CacheSize;
   fragmentRegistry: FragmentRegistryCacheSizes;
   inMemoryCache: InMemoryCacheSizes;
   links: Array<LinkCacheSize>;
-  parser: Maybe<CacheSize>;
-  print: Maybe<CacheSize>;
+  parser: CacheSize;
+  print: CacheSize;
   queryManager: QueryManagerCacheSizes;
 };
 
 export type PersistedQueryLinkCacheSizes = {
   __typename: "PersistedQueryLinkCacheSizes";
-  persistedQueryHashes: Maybe<CacheSize>;
+  persistedQueryHashes: CacheSize;
 };
 
 export type Query = {
@@ -143,12 +144,12 @@ export type QueryclientArgs = {
 export type QueryManagerCacheSizes = {
   __typename: "QueryManagerCacheSizes";
   documentTransforms: Maybe<Array<DocumentTransformCacheSizes>>;
-  getDocumentInfo: Maybe<CacheSize>;
+  getDocumentInfo: CacheSize;
 };
 
 export type RemoveTypenameFromVariablesLinkCacheSizes = {
   __typename: "RemoveTypenameFromVariablesLinkCacheSizes";
-  getVariableDefinitions: Maybe<CacheSize>;
+  getVariableDefinitions: CacheSize;
 };
 
 export type SerializedApolloError = {
@@ -270,17 +271,17 @@ export type MemoryInternalsQuery = {
           __typename: "CacheSize";
           size: number | null;
           limit: number | null;
-        } | null;
+        };
         parser: {
           __typename: "CacheSize";
           size: number | null;
           limit: number | null;
-        } | null;
+        };
         canonicalStringify: {
           __typename: "CacheSize";
           size: number | null;
           limit: number | null;
-        } | null;
+        };
         links: Array<
           | {
               __typename: "PersistedQueryLinkCacheSizes";
@@ -288,7 +289,7 @@ export type MemoryInternalsQuery = {
                 __typename: "CacheSize";
                 size: number | null;
                 limit: number | null;
-              } | null;
+              };
             }
           | {
               __typename: "RemoveTypenameFromVariablesLinkCacheSizes";
@@ -296,7 +297,7 @@ export type MemoryInternalsQuery = {
                 __typename: "CacheSize";
                 size: number | null;
                 limit: number | null;
-              } | null;
+              };
             }
         >;
         queryManager: {
@@ -305,14 +306,14 @@ export type MemoryInternalsQuery = {
             __typename: "CacheSize";
             size: number | null;
             limit: number | null;
-          } | null;
+          };
           documentTransforms: Array<{
             __typename: "DocumentTransformCacheSizes";
             cache: {
               __typename: "CacheSize";
               size: number | null;
               limit: number | null;
-            } | null;
+            };
           }> | null;
         };
         fragmentRegistry: {
@@ -321,17 +322,17 @@ export type MemoryInternalsQuery = {
             __typename: "CacheSize";
             size: number | null;
             limit: number | null;
-          } | null;
+          };
           findFragmentSpreads: {
             __typename: "CacheSize";
             size: number | null;
             limit: number | null;
-          } | null;
+          };
           transform: {
             __typename: "CacheSize";
             size: number | null;
             limit: number | null;
-          } | null;
+          };
         };
         cache: {
           __typename: "BaseCacheSizes";
@@ -339,7 +340,7 @@ export type MemoryInternalsQuery = {
             __typename: "CacheSize";
             size: number | null;
             limit: number | null;
-          } | null;
+          };
         };
         addTypenameDocumentTransform: Array<{
           __typename: "DocumentTransformCacheSizes";
@@ -347,7 +348,7 @@ export type MemoryInternalsQuery = {
             __typename: "CacheSize";
             size: number | null;
             limit: number | null;
-          } | null;
+          };
         }> | null;
         inMemoryCache: {
           __typename: "InMemoryCacheSizes";
@@ -355,17 +356,17 @@ export type MemoryInternalsQuery = {
             __typename: "CacheSize";
             size: number | null;
             limit: number | null;
-          } | null;
+          };
           executeSelectionSet: {
             __typename: "CacheSize";
             size: number | null;
             limit: number | null;
-          } | null;
+          };
           executeSubSelectedArray: {
             __typename: "CacheSize";
             size: number | null;
             limit: number | null;
-          } | null;
+          };
         };
       };
     } | null;
