@@ -132,9 +132,7 @@ handleRpc("getCache", (clientId) => {
 });
 
 handleRpc("getMemoryInternals", (clientId) => {
-  const client = getClientById(clientId);
-
-  return client?.getMemoryInternals?.();
+  return getClientById(clientId)?.getMemoryInternals?.();
 });
 
 function getClientById(clientId: string) {
