@@ -271,7 +271,7 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
   const { data, networkStatus, error } = useQuery(MEMORY_INTERNALS_QUERY, {
     variables: { clientId: clientId as string },
     skip: !clientId,
-    pollInterval: 500,
+    pollInterval: 1000,
   });
 
   if (error) {
