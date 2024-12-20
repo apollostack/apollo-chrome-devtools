@@ -163,13 +163,57 @@ const descriptions: Record<keyof CacheSizes, ReactNode> = {
       </ExternalLink>
     </p>
   ),
-  "PersistedQueryLink.persistedQueryHashes": "",
+  "PersistedQueryLink.persistedQueryHashes": (
+    <>
+      <p>
+        A cache inside of
+        <ExternalLink href="https://github.com/apollographql/apollo-client/blob/main/src/link/persisted-queries/index.ts">
+          <code>PersistedQueryLink</code>
+        </ExternalLink>
+        .
+      </p>
+
+      <p>
+        It is called with transformed <code>DocumentNode</code>s.
+      </p>
+    </>
+  ),
   "removeTypenameFromVariables.getVariableDefinitions": "",
-  "queryManager.getDocumentInfo": "",
+  "queryManager.getDocumentInfo": (
+    <>
+      <p>
+        A cache inside of{" "}
+        <ExternalLink
+          href="https://github.com/apollographql/apollo-client/blob/main/src/core/QueryManager.ts"
+          className="inline-flex items-center gap-1"
+        >
+          <code>QueryManager</code>
+          <IconOutlinkSm className="size-3" />
+        </ExternalLink>
+        .
+      </p>
+      <p>It is called with transformed `DocumentNode`s.</p>
+    </>
+  ),
   "documentTransform.cache": "",
   "fragmentRegistry.lookup": "",
   "fragmentRegistry.findFragmentSpreads": "",
-  "fragmentRegistry.transform": "",
+  "fragmentRegistry.transform": (
+    <>
+      <p>
+        A cache inside of
+        <ExternalLink href="https://github.com/apollographql/apollo-client/blob/main/src/cache/inmemory/fragmentRegistry.ts">
+          <code>FragmentRegistry</code>
+        </ExternalLink>
+        .
+      </p>
+
+      <p>
+        Can be called with user-defined or already-transformed{" "}
+        <code>DocumentNode</code>s.
+      </p>
+    </>
+  ),
   "cache.fragmentQueryDocuments": "",
   "inMemoryCache.executeSelectionSet": "",
   "inMemoryCache.executeSubSelectedArray": "",
