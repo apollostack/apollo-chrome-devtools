@@ -5,6 +5,7 @@ import IconOutlinkSm from "@apollo/icons/small/IconOutlink.svg";
 import IconOperations from "@apollo/icons/default/IconOperations.svg";
 import IconObserve from "@apollo/icons/default/IconObserve.svg";
 import IconInfo from "@apollo/icons/default/IconInfo.svg";
+import IconWarning from "@apollo/icons/large/IconWarning.svg";
 
 import { FullWidthLayout } from "./Layouts/FullWidthLayout";
 import { PageSpinner } from "./PageSpinner";
@@ -213,7 +214,7 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
   }
 
   return (
-    <FullWidthLayout className="p-4 gap-4">
+    <FullWidthLayout className="p-4 gap-6">
       <div className="flex gap-2 justify-between items-start">
         <header className="flex flex-col gap-2">
           <h1 className="font-medium text-2xl text-heading dark:text-heading-dark">
@@ -256,7 +257,7 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
       </div>
       <FullWidthLayout.Main className="flex flex-col gap-4 overflow-auto">
         {selectedView === "chart" ? (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-4">
             <CacheSize cacheSize={caches.cache.fragmentQueryDocuments} />
             {caches.queryManager.documentTransforms?.map(({ cache }, index) => (
               <CacheSize key={index} cacheSize={cache} />
@@ -337,9 +338,9 @@ function CacheSize({ cacheSize }: { cacheSize: CacheSize }) {
   const percentUsed = (cacheSize.size / cacheSize.limit) * 100;
 
   return (
-    <div className="border border-primary dark:border-primary-dark rounded p-3 flex flex-col gap-4">
+    <div className="border border-primary dark:border-primary-dark rounded p-4 flex flex-col gap-4 min-w-[300px]">
       <h2 className="text-heading dark:text-heading-dark text-sm font-code flex gap-2 items-center">
-        {cacheSize.key}
+        <code>{cacheSize.key}</code>
         {description && (
           <Tooltip
             content={<div className="flex flex-col gap-2">{description}</div>}
@@ -350,28 +351,33 @@ function CacheSize({ cacheSize }: { cacheSize: CacheSize }) {
           </Tooltip>
         )}
       </h2>
-      <div className="flex gap-2 items-center">
-        <div className="flex flex-col gap-1">
-          <span className="uppercase text-secondary dark:text-secondary-dark">
+      <div className="flex gap-6 items-end">
+        <div className="flex flex-col gap-3">
+          <span className="uppercase text-secondary dark:text-secondary-dark text-xs font-bold">
             Size
           </span>
           <span className="font-code">{cacheSize.size}</span>
         </div>
-        <div className="flex flex-col gap-1">
-          <span className="uppercase text-secondary dark:text-secondary-dark">
+        <div className="flex flex-col gap-3">
+          <span className="uppercase text-secondary dark:text-secondary-dark text-xs font-bold">
             Limit
           </span>
           <span className="font-code">{cacheSize.limit}</span>
         </div>
         <div
-          className={clsx("text-3xl", {
-            "text-error dark:text-error-dark": percentUsed >= 90,
-            "text-warning dark:text-warning-dark":
-              percentUsed >= 70 && percentUsed < 90,
-            "text-success dark:text-success-dark-dark": percentUsed < 70,
-          })}
+          className={clsx(
+            "text-3xl text-right flex-1 font-code flex gap-2 items-center justify-end",
+            {
+              "text-error dark:text-error-dark": percentUsed >= 90,
+              "text-warning dark:text-warning-dark":
+                percentUsed >= 70 && percentUsed < 90,
+            }
+          )}
         >
-          {percentUsed.toFixed(1)}%
+          {percentUsed > 70 ? (
+            <IconWarning className="text-current size-6" />
+          ) : null}
+          {percentUsed < 1 ? percentUsed.toFixed(1) : Math.floor(percentUsed)}%
         </div>
       </div>
     </div>
