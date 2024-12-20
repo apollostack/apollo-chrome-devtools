@@ -1,7 +1,6 @@
 import type { TypedDocumentNode } from "@apollo/client";
 import { gql, NetworkStatus, useQuery } from "@apollo/client";
 import IconOutlink from "@apollo/icons/default/IconOutlink.svg";
-import IconOutlinkSm from "@apollo/icons/small/IconOutlink.svg";
 import IconOperations from "@apollo/icons/default/IconOperations.svg";
 import IconObserve from "@apollo/icons/default/IconObserve.svg";
 
@@ -17,8 +16,6 @@ import { ButtonGroup } from "./ButtonGroup";
 import { Button } from "./Button";
 import { Tooltip } from "./Tooltip";
 import { JSONTreeViewer } from "./JSONTreeViewer";
-import type { CacheSizes } from "@apollo/client/utilities";
-import { ExternalLink } from "./ExternalLink";
 import { CacheSize } from "./CacheSize";
 
 interface MemoryInternalsProps {
