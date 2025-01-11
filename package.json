@@ -61,7 +61,7 @@
     "react-error-boundary": "^4.0.13",
     "react-json-tree": "^0.19.0",
     "react-markdown": "^9.0.1",
-    "react-resizable-panels": "^1.0.0",
+    "react-resizable-panels": "^2.0.0",
     "react-syntax-highlighter": "^15.5.0",
     "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.0",
