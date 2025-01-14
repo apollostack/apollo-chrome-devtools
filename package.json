@@ -49,7 +49,7 @@
     "@xstate/react": "^4.1.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
-    "expect-type": "^0.20.0",
+    "expect-type": "^1.0.0",
     "framer-motion": "^11.0.3",
     "graphql": "^16.0.0",
     "graphql-tag": "^2.11.0",
