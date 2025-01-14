@@ -45,6 +45,10 @@ export function runServer(
     clients.get(id)!.rpcClient.request("getCache", id)
   );
 
+  handleRpc("getMemoryInternals", (id) =>
+    clients.get(id)!.rpcClient.request("getMemoryInternals", id)
+  );
+
   server.on("connection", function connection(ws) {
     let id: string | undefined;
     const wsAdapter = createSocketMessageAdapter(ws);

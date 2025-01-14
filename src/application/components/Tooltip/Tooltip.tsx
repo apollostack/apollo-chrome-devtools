@@ -21,7 +21,7 @@ export function Tooltip({
       <Portal>
         <Content
           sideOffset={4}
-          className="shadow-popovers border rounded bg-black dark:bg-black-dark border-black dark:border-black-dark py-1 px-2 text-white dark:text-white-dark text-sm font-body"
+          className="shadow-popovers border rounded bg-black dark:bg-black-dark border-black dark:border-black-dark py-1 px-2 text-white dark:text-white-dark text-sm font-body max-w-72"
           side={side}
         >
           {content}

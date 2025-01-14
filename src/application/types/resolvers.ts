@@ -56,10 +56,23 @@ export type Scalars = {
   Variables: { input: Variables; output: Variables };
 };
 
+export type BaseCacheSizes = {
+  __typename?: "BaseCacheSizes";
+  fragmentQueryDocuments: CacheSize;
+};
+
+export type CacheSize = {
+  __typename?: "CacheSize";
+  key: Scalars["String"]["output"];
+  limit?: Maybe<Scalars["Int"]["output"]>;
+  size?: Maybe<Scalars["Int"]["output"]>;
+};
+
 export type Client = {
   __typename?: "Client";
   cache: Scalars["Cache"]["output"];
   id: Scalars["String"]["output"];
+  memoryInternals?: Maybe<MemoryInternals>;
   mutations: ClientMutations;
   name?: Maybe<Scalars["String"]["output"]>;
   queries: ClientQueries;
@@ -78,10 +91,57 @@ export type ClientQueries = {
   total: Scalars["Int"]["output"];
 };
 
+export type DocumentTransformCacheSizes = {
+  __typename?: "DocumentTransformCacheSizes";
+  cache: CacheSize;
+};
+
+export type FragmentRegistryCacheSizes = {
+  __typename?: "FragmentRegistryCacheSizes";
+  findFragmentSpreads: CacheSize;
+  lookup: CacheSize;
+  transform: CacheSize;
+};
+
 export type GraphQlErrorSourceLocation = {
   __typename?: "GraphQLErrorSourceLocation";
   column: Scalars["Int"]["output"];
   line: Scalars["Int"]["output"];
+};
+
+export type InMemoryCacheSizes = {
+  __typename?: "InMemoryCacheSizes";
+  executeSelectionSet: CacheSize;
+  executeSubSelectedArray: CacheSize;
+  maybeBroadcastWatch: CacheSize;
+};
+
+export type LinkCacheSize =
+  | PersistedQueryLinkCacheSizes
+  | RemoveTypenameFromVariablesLinkCacheSizes;
+
+export type MemoryInternals = {
+  __typename?: "MemoryInternals";
+  caches: MemoryInternalsCaches;
+  raw?: Maybe<Scalars["JSON"]["output"]>;
+};
+
+export type MemoryInternalsCaches = {
+  __typename?: "MemoryInternalsCaches";
+  addTypenameDocumentTransform?: Maybe<Array<DocumentTransformCacheSizes>>;
+  cache: BaseCacheSizes;
+  canonicalStringify: CacheSize;
+  fragmentRegistry: FragmentRegistryCacheSizes;
+  inMemoryCache: InMemoryCacheSizes;
+  links: Array<LinkCacheSize>;
+  parser: CacheSize;
+  print: CacheSize;
+  queryManager: QueryManagerCacheSizes;
+};
+
+export type PersistedQueryLinkCacheSizes = {
+  __typename?: "PersistedQueryLinkCacheSizes";
+  persistedQueryHashes: CacheSize;
 };
 
 export type Query = {
@@ -92,6 +152,17 @@ export type Query = {
 
 export type QueryClientArgs = {
   id: Scalars["ID"]["input"];
+};
+
+export type QueryManagerCacheSizes = {
+  __typename?: "QueryManagerCacheSizes";
+  documentTransforms?: Maybe<Array<DocumentTransformCacheSizes>>;
+  getDocumentInfo: CacheSize;
+};
+
+export type RemoveTypenameFromVariablesLinkCacheSizes = {
+  __typename?: "RemoveTypenameFromVariablesLinkCacheSizes";
+  getVariableDefinitions: CacheSize;
 };
 
 export type SerializedApolloError = {
@@ -257,24 +328,44 @@ export type DirectiveResolverFn<
 
 /** Mapping of union types */
 export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = {
+  LinkCacheSize:
+    | PersistedQueryLinkCacheSizes
+    | RemoveTypenameFromVariablesLinkCacheSizes;
   WatchedMutationError: RpcSerializedApolloError | RpcSerializedError;
 };
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
+  BaseCacheSizes: ResolverTypeWrapper<BaseCacheSizes>;
   Boolean: ResolverTypeWrapper<Scalars["Boolean"]["output"]>;
   Cache: ResolverTypeWrapper<Scalars["Cache"]["output"]>;
+  CacheSize: ResolverTypeWrapper<CacheSize>;
   Client: ResolverTypeWrapper<ApolloClientInfo>;
   ClientMutations: ResolverTypeWrapper<ApolloClientInfo>;
   ClientQueries: ResolverTypeWrapper<ApolloClientInfo>;
+  DocumentTransformCacheSizes: ResolverTypeWrapper<DocumentTransformCacheSizes>;
+  FragmentRegistryCacheSizes: ResolverTypeWrapper<FragmentRegistryCacheSizes>;
   GraphQLErrorPath: ResolverTypeWrapper<Scalars["GraphQLErrorPath"]["output"]>;
   GraphQLErrorSourceLocation: ResolverTypeWrapper<GraphQlErrorSourceLocation>;
   ID: ResolverTypeWrapper<Scalars["ID"]["output"]>;
+  InMemoryCacheSizes: ResolverTypeWrapper<InMemoryCacheSizes>;
   Int: ResolverTypeWrapper<Scalars["Int"]["output"]>;
   JSON: ResolverTypeWrapper<Scalars["JSON"]["output"]>;
+  LinkCacheSize: ResolverTypeWrapper<
+    ResolversUnionTypes<ResolversTypes>["LinkCacheSize"]
+  >;
+  MemoryInternals: ResolverTypeWrapper<MemoryInternals>;
+  MemoryInternalsCaches: ResolverTypeWrapper<
+    Omit<MemoryInternalsCaches, "links"> & {
+      links: Array<ResolversTypes["LinkCacheSize"]>;
+    }
+  >;
+  PersistedQueryLinkCacheSizes: ResolverTypeWrapper<PersistedQueryLinkCacheSizes>;
   Query: ResolverTypeWrapper<never>;
   QueryData: ResolverTypeWrapper<Scalars["QueryData"]["output"]>;
+  QueryManagerCacheSizes: ResolverTypeWrapper<QueryManagerCacheSizes>;
   QueryOptions: ResolverTypeWrapper<Scalars["QueryOptions"]["output"]>;
+  RemoveTypenameFromVariablesLinkCacheSizes: ResolverTypeWrapper<RemoveTypenameFromVariablesLinkCacheSizes>;
   SerializedApolloError: ResolverTypeWrapper<RpcSerializedApolloError>;
   SerializedError: ResolverTypeWrapper<RpcSerializedError>;
   SerializedGraphQLError: ResolverTypeWrapper<GraphQLFormattedError>;
@@ -302,19 +393,32 @@ export type ResolversTypes = {
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
+  BaseCacheSizes: BaseCacheSizes;
   Boolean: Scalars["Boolean"]["output"];
   Cache: Scalars["Cache"]["output"];
+  CacheSize: CacheSize;
   Client: ApolloClientInfo;
   ClientMutations: ApolloClientInfo;
   ClientQueries: ApolloClientInfo;
+  DocumentTransformCacheSizes: DocumentTransformCacheSizes;
+  FragmentRegistryCacheSizes: FragmentRegistryCacheSizes;
   GraphQLErrorPath: Scalars["GraphQLErrorPath"]["output"];
   GraphQLErrorSourceLocation: GraphQlErrorSourceLocation;
   ID: Scalars["ID"]["output"];
+  InMemoryCacheSizes: InMemoryCacheSizes;
   Int: Scalars["Int"]["output"];
   JSON: Scalars["JSON"]["output"];
+  LinkCacheSize: ResolversUnionTypes<ResolversParentTypes>["LinkCacheSize"];
+  MemoryInternals: MemoryInternals;
+  MemoryInternalsCaches: Omit<MemoryInternalsCaches, "links"> & {
+    links: Array<ResolversParentTypes["LinkCacheSize"]>;
+  };
+  PersistedQueryLinkCacheSizes: PersistedQueryLinkCacheSizes;
   Query: never;
   QueryData: Scalars["QueryData"]["output"];
+  QueryManagerCacheSizes: QueryManagerCacheSizes;
   QueryOptions: Scalars["QueryOptions"]["output"];
+  RemoveTypenameFromVariablesLinkCacheSizes: RemoveTypenameFromVariablesLinkCacheSizes;
   SerializedApolloError: RpcSerializedApolloError;
   SerializedError: RpcSerializedError;
   SerializedGraphQLError: GraphQLFormattedError;
@@ -332,10 +436,34 @@ export type ResolversParentTypes = {
   };
 };
 
+export type BaseCacheSizesResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["BaseCacheSizes"] = ResolversParentTypes["BaseCacheSizes"],
+> = {
+  fragmentQueryDocuments?: Resolver<
+    ResolversTypes["CacheSize"],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export interface CacheScalarConfig
   extends GraphQLScalarTypeConfig<ResolversTypes["Cache"], any> {
   name: "Cache";
 }
+
+export type CacheSizeResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["CacheSize"] = ResolversParentTypes["CacheSize"],
+> = {
+  key?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  limit?: Resolver<Maybe<ResolversTypes["Int"]>, ParentType, ContextType>;
+  size?: Resolver<Maybe<ResolversTypes["Int"]>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
 
 export type ClientResolvers<
   ContextType = any,
@@ -344,6 +472,11 @@ export type ClientResolvers<
 > = {
   cache?: Resolver<ResolversTypes["Cache"], ParentType, ContextType>;
   id?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  memoryInternals?: Resolver<
+    Maybe<ResolversTypes["MemoryInternals"]>,
+    ParentType,
+    ContextType
+  >;
   mutations?: Resolver<
     ResolversTypes["ClientMutations"],
     ParentType,
@@ -383,6 +516,30 @@ export type ClientQueriesResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type DocumentTransformCacheSizesResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["DocumentTransformCacheSizes"] = ResolversParentTypes["DocumentTransformCacheSizes"],
+> = {
+  cache?: Resolver<ResolversTypes["CacheSize"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type FragmentRegistryCacheSizesResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["FragmentRegistryCacheSizes"] = ResolversParentTypes["FragmentRegistryCacheSizes"],
+> = {
+  findFragmentSpreads?: Resolver<
+    ResolversTypes["CacheSize"],
+    ParentType,
+    ContextType
+  >;
+  lookup?: Resolver<ResolversTypes["CacheSize"], ParentType, ContextType>;
+  transform?: Resolver<ResolversTypes["CacheSize"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export interface GraphQlErrorPathScalarConfig
   extends GraphQLScalarTypeConfig<ResolversTypes["GraphQLErrorPath"], any> {
   name: "GraphQLErrorPath";
@@ -398,10 +555,114 @@ export type GraphQlErrorSourceLocationResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type InMemoryCacheSizesResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["InMemoryCacheSizes"] = ResolversParentTypes["InMemoryCacheSizes"],
+> = {
+  executeSelectionSet?: Resolver<
+    ResolversTypes["CacheSize"],
+    ParentType,
+    ContextType
+  >;
+  executeSubSelectedArray?: Resolver<
+    ResolversTypes["CacheSize"],
+    ParentType,
+    ContextType
+  >;
+  maybeBroadcastWatch?: Resolver<
+    ResolversTypes["CacheSize"],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export interface JsonScalarConfig
   extends GraphQLScalarTypeConfig<ResolversTypes["JSON"], any> {
   name: "JSON";
 }
+
+export type LinkCacheSizeResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["LinkCacheSize"] = ResolversParentTypes["LinkCacheSize"],
+> = {
+  __resolveType: TypeResolveFn<
+    | "PersistedQueryLinkCacheSizes"
+    | "RemoveTypenameFromVariablesLinkCacheSizes",
+    ParentType,
+    ContextType
+  >;
+};
+
+export type MemoryInternalsResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["MemoryInternals"] = ResolversParentTypes["MemoryInternals"],
+> = {
+  caches?: Resolver<
+    ResolversTypes["MemoryInternalsCaches"],
+    ParentType,
+    ContextType
+  >;
+  raw?: Resolver<Maybe<ResolversTypes["JSON"]>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type MemoryInternalsCachesResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["MemoryInternalsCaches"] = ResolversParentTypes["MemoryInternalsCaches"],
+> = {
+  addTypenameDocumentTransform?: Resolver<
+    Maybe<Array<ResolversTypes["DocumentTransformCacheSizes"]>>,
+    ParentType,
+    ContextType
+  >;
+  cache?: Resolver<ResolversTypes["BaseCacheSizes"], ParentType, ContextType>;
+  canonicalStringify?: Resolver<
+    ResolversTypes["CacheSize"],
+    ParentType,
+    ContextType
+  >;
+  fragmentRegistry?: Resolver<
+    ResolversTypes["FragmentRegistryCacheSizes"],
+    ParentType,
+    ContextType
+  >;
+  inMemoryCache?: Resolver<
+    ResolversTypes["InMemoryCacheSizes"],
+    ParentType,
+    ContextType
+  >;
+  links?: Resolver<
+    Array<ResolversTypes["LinkCacheSize"]>,
+    ParentType,
+    ContextType
+  >;
+  parser?: Resolver<ResolversTypes["CacheSize"], ParentType, ContextType>;
+  print?: Resolver<ResolversTypes["CacheSize"], ParentType, ContextType>;
+  queryManager?: Resolver<
+    ResolversTypes["QueryManagerCacheSizes"],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type PersistedQueryLinkCacheSizesResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["PersistedQueryLinkCacheSizes"] = ResolversParentTypes["PersistedQueryLinkCacheSizes"],
+> = {
+  persistedQueryHashes?: Resolver<
+    ResolversTypes["CacheSize"],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
 
 export type QueryResolvers<
   ContextType = any,
@@ -422,10 +683,41 @@ export interface QueryDataScalarConfig
   name: "QueryData";
 }
 
+export type QueryManagerCacheSizesResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["QueryManagerCacheSizes"] = ResolversParentTypes["QueryManagerCacheSizes"],
+> = {
+  documentTransforms?: Resolver<
+    Maybe<Array<ResolversTypes["DocumentTransformCacheSizes"]>>,
+    ParentType,
+    ContextType
+  >;
+  getDocumentInfo?: Resolver<
+    ResolversTypes["CacheSize"],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export interface QueryOptionsScalarConfig
   extends GraphQLScalarTypeConfig<ResolversTypes["QueryOptions"], any> {
   name: "QueryOptions";
 }
+
+export type RemoveTypenameFromVariablesLinkCacheSizesResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["RemoveTypenameFromVariablesLinkCacheSizes"] = ResolversParentTypes["RemoveTypenameFromVariablesLinkCacheSizes"],
+> = {
+  getVariableDefinitions?: Resolver<
+    ResolversTypes["CacheSize"],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
 
 export type SerializedApolloErrorResolvers<
   ContextType = any,
@@ -579,16 +871,27 @@ export type WatchedQueryResolvers<
 };
 
 export type Resolvers<ContextType = any> = {
+  BaseCacheSizes?: BaseCacheSizesResolvers<ContextType>;
   Cache?: GraphQLScalarType;
+  CacheSize?: CacheSizeResolvers<ContextType>;
   Client?: ClientResolvers<ContextType>;
   ClientMutations?: ClientMutationsResolvers<ContextType>;
   ClientQueries?: ClientQueriesResolvers<ContextType>;
+  DocumentTransformCacheSizes?: DocumentTransformCacheSizesResolvers<ContextType>;
+  FragmentRegistryCacheSizes?: FragmentRegistryCacheSizesResolvers<ContextType>;
   GraphQLErrorPath?: GraphQLScalarType;
   GraphQLErrorSourceLocation?: GraphQlErrorSourceLocationResolvers<ContextType>;
+  InMemoryCacheSizes?: InMemoryCacheSizesResolvers<ContextType>;
   JSON?: GraphQLScalarType;
+  LinkCacheSize?: LinkCacheSizeResolvers<ContextType>;
+  MemoryInternals?: MemoryInternalsResolvers<ContextType>;
+  MemoryInternalsCaches?: MemoryInternalsCachesResolvers<ContextType>;
+  PersistedQueryLinkCacheSizes?: PersistedQueryLinkCacheSizesResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   QueryData?: GraphQLScalarType;
+  QueryManagerCacheSizes?: QueryManagerCacheSizesResolvers<ContextType>;
   QueryOptions?: GraphQLScalarType;
+  RemoveTypenameFromVariablesLinkCacheSizes?: RemoveTypenameFromVariablesLinkCacheSizesResolvers<ContextType>;
   SerializedApolloError?: SerializedApolloErrorResolvers<ContextType>;
   SerializedError?: SerializedErrorResolvers<ContextType>;
   SerializedGraphQLError?: SerializedGraphQlErrorResolvers<ContextType>;

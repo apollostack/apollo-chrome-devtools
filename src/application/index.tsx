@@ -58,6 +58,9 @@ const cache = new InMemoryCache({
         cache: {
           merge: false,
         },
+        memoryInternals: {
+          merge: false,
+        },
       },
     },
     ClientQueries: {
