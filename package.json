@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@apollo/brand": "^0.7.0",
-    "@apollo/client": "3.11.10",
+    "@apollo/client": "3.12.6",
     "@apollo/icons": "^0.6.0",
     "@apollo/tailwind-preset": "^0.2.0",
     "@headlessui/react": "^2.1.0",
