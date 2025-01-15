@@ -7,10 +7,10 @@
     "start": "npm run clean && nodemon --watch './**/*.js' index.js"
   },
   "devDependencies": {
-    "@apollo/datasource-rest": "^6.0.0",
-    "@apollo/server": "^4.3.0",
-    "graphql": "^16.6.0",
-    "lowdb": "^1.0.0",
+    "@apollo/datasource-rest": "6.0.0",
+    "@apollo/server": "4.9.3",
+    "graphql": "16.8.1",
+    "lowdb": "1.0.0",
     "nodemon": "3.1.9"
   }
 }
