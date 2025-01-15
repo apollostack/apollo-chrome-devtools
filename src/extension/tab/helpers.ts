@@ -103,7 +103,7 @@ function serializeApolloError(error: ApolloError): SerializedApolloError {
       ? serializeError(error.networkError)
       : undefined,
     message: error.message,
-    graphQLErrors: error.graphQLErrors,
+    graphQLErrors: error.graphQLErrors ?? [],
     protocolErrors: error.protocolErrors?.map((e) => e.message) ?? [],
   };
 }
